@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv'
 import bookRoutes from './routes/books.js';
-// import authorRoutes from './routes/authors.js'
+import authorRoutes from './routes/authors.js'
 // import categorieRoutes from './routes/categories.js'
 
 import connect from './configs/db.js';
@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 // routes
 app.use('/api/books',bookRoutes);
-// app.use('/api/authors',authorRoutes)
+app.use('/api/authors',authorRoutes)
 // app.use('/api/categories',categorieRoutes)
 
 app.listen(process.env.PORT, () => {

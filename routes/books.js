@@ -11,7 +11,6 @@ const router = express.Router()
 // GET a single book
 router.get('/:id',getBook)
 
-
 // POST a new book
 router.post('/', createBook)
 
