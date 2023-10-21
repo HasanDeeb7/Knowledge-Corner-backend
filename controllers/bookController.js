@@ -1,5 +1,7 @@
 import Book from '../models/bookModel.js'
 import mongoose from 'mongoose'
+import multer from 'multer';
+
 
 // get all books
 
@@ -28,10 +30,11 @@ export const getBook = async (req,res) =>{
     res.status(200).json(book)
 }
 
-// create new book
+////// create new book
 
-export const createBook = async (req, res) => {
-    const { title, ISBN, publicationDate, description, nbPages, image, language, rating } = req.body
+export const createBook =  async (req, res) => {
+    const { title, ISBN, publicationDate, description, nbPages, language, rating } = req.body
+    const { image } =req.file.filename
 
     // add doc to db
     try {
@@ -42,6 +45,27 @@ export const createBook = async (req, res) => {
         res.status(400).json({ error: error.message })
     }
 }
+
+
+
+// // Create new book with image upload
+// export const createBook = async (req, res) => {
+//     const { title, ISBN, publicationDate, description, nbPages, language, rating } = req.body;
+//     const image = req.file.filename; // Get the image path from the uploaded file
+
+//     // Add doc to the database
+//     try {
+//         const book = await Book.create({ title, ISBN, publicationDate, description, nbPages, image, language, rating });
+
+//         res.status(200).json(book);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
+
+
+
+
 
 // delete a book
 

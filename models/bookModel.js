@@ -10,9 +10,9 @@ const bookSchema = new Schema({
     nbPages: { type: Number , required : true},
     // author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' }, 
     // category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' }, 
-    image: { type: String },
+    image: { type: String , required : true},
     language: { type: String , required:true},
-    rating: { type: Number , required:true},
+    rating: { type: Number , default:0},
 },{timestamps:true})
 
 export default mongoose.model('Book',bookSchema)
