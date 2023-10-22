@@ -1,11 +1,11 @@
 import Book from '../models/bookModel.js'
 import mongoose from 'mongoose'
 import multer from 'multer';
-
+import path from 'path';
 
 // get all books
 
-export const getBooks = async (req,res) =>{
+export const getBooks = async (req, res) => {
     const books = await Book.find({})
 
     res.status(200).json(books)
@@ -14,17 +14,17 @@ export const getBooks = async (req,res) =>{
 
 // get a single book
 
-export const getBook = async (req,res) =>{
-    const {id} = req.params
+export const getBook = async (req, res) => {
+    const { id } = req.params
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error:'No such book'})
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No such book' })
     }
 
     const book = await Book.findById(id)
 
-    if(!book){
-        return res.status(404).json({error:"No such a book"})
+    if (!book) {
+        return res.status(404).json({ error: "No such a book" })
     }
 
     res.status(200).json(book)
@@ -32,54 +32,74 @@ export const getBook = async (req,res) =>{
 
 ////// create new book
 
-export const createBook =  async (req, res) => {
-    const { title, ISBN, publicationDate, description, nbPages, language, rating } = req.body
-    const { image } =req.file.filename
+// export const createBook =  async (req, res) => {
+//     const { title, ISBN, publicationDate, description, nbPages, author ,image , language, rating } = req.body
 
-    // add doc to db
-    try {
-        const book = await Book.create({ title, ISBN, publicationDate, description, nbPages, image, language, rating })
-
-        res.status(200).json(book)
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
-}
-
-
-
-// // Create new book with image upload
-// export const createBook = async (req, res) => {
-//     const { title, ISBN, publicationDate, description, nbPages, language, rating } = req.body;
-//     const image = req.file.filename; // Get the image path from the uploaded file
-
-//     // Add doc to the database
+//     // add doc to db
 //     try {
-//         const book = await Book.create({ title, ISBN, publicationDate, description, nbPages, image, language, rating });
+//         const book = await Book.create({ title, ISBN, publicationDate, description, nbPages,author ,image, language, rating })
 
-//         res.status(200).json(book);
+//         res.status(200).json(book)
 //     } catch (error) {
-//         res.status(400).json({ error: error.message });
+//         res.status(400).json({ error: error.message })
 //     }
-// };
+// }
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'images/');
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, 'image-' + uniqueSuffix + path.extname(file.originalname));
+    },
+  });
+
+  const upload = multer({ storage: storage });
+
+  export const createBook = async (req, res) => {
+    upload.single('image')(req, res, async function (err) {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+  
+      const { title, ISBN, publicationDate, description, nbPages, author, language, rating } = req.body;
+  
+      if (!req.file) {
+        return res.status(400).json({ error: 'Please upload an image' });
+      }
+  
+      const image = req.file.path;
+  
+      try {
+        const book = await Book.create({ title, ISBN, publicationDate, description, nbPages, author, image, language, rating });
+  
+        res.status(200).json(book);
+      } catch (error) {
+        res.status(400).json({ error: error.message });
+      }
+    });
+  };
 
 
 
+  
 
 
 // delete a book
 
-export const deleteBook = async (req,res) =>{
-    const {id} = req.params
+export const deleteBook = async (req, res) => {
+    const { id } = req.params
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error:'No such book'})
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No such book' })
     }
 
-    const book = await Book.findOneAndDelete({_id : id})
+    const book = await Book.findOneAndDelete({ _id: id })
 
-    if(!book){
-        return res.status(400).json({error:"No such a book"})
+    if (!book) {
+        return res.status(400).json({ error: "No such a book" })
     }
 
     res.status(200).json(book)
@@ -89,19 +109,19 @@ export const deleteBook = async (req,res) =>{
 
 // update a book
 
-export const updateBook = async (req,res) =>{
-    const {id} = req.params
+export const updateBook = async (req, res) => {
+    const { id } = req.params
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error:'No such book'})
-    }  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No such book' })
+    }
 
-    const book = await Book.findOneAndUpdate({_id : id},{
+    const book = await Book.findOneAndUpdate({ _id: id }, {
         ...req.body
     })
 
-    if(!book){
-        return res.status(404).json({error:"No such a book"})
+    if (!book) {
+        return res.status(404).json({ error: "No such a book" })
     }
 
     res.status(200).json(book)

@@ -8,7 +8,7 @@ const bookSchema = new Schema({
     publicationDate: { type: Date , required:true},
     description: { type: String , required:true},
     nbPages: { type: Number , required : true},
-    // author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' }, 
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' }, 
     // category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' }, 
     image: { type: String , required : true},
     language: { type: String , required:true},
