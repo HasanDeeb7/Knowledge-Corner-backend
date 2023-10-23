@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import Author from "../models/authorModel.js";
 
+//get all authors
 export const getAuthors = async (request, response) => {
   const authors = await Author.find({}).sort({ createdAt: -1 });
   response.status(200).json(authors);
 };
-
+//get an author
 export const getAuthor = async (request, response) => {
   const { id } = request.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -17,7 +18,7 @@ export const getAuthor = async (request, response) => {
   }
   response.json(author);
 };
-
+//create author
 export const createAuthor = async (request, response) => {
   const {
     firstName,
@@ -49,7 +50,7 @@ export const createAuthor = async (request, response) => {
     response.status(400).json({ error: error.message });
   }
 };
-
+//delete author
 export const deleteAuthor = async (request, response) => {
   const { id } = request.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -61,7 +62,7 @@ export const deleteAuthor = async (request, response) => {
   }
   response.status(200).json(author);
 };
-
+// update author
 export const updateAuthor = async (request, response) => {
   const { id } = request.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
