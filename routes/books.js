@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import {createBook , getBooks , getBook , deleteBook , updateBook , getBookByAutherId} from '../controllers/bookController.js'
+import {createBook , getBooks , getBook , deleteBook , updateBook , getBookByAutherId,getBookByCategoryId} from '../controllers/bookController.js'
 
 
   
@@ -16,6 +16,9 @@ router.get('/:id',getBook)
 
 // GET book by autherID
 router.get('/getBookByAutherID/:id',getBookByAutherId)
+
+// GET book by CategoryID
+router.get('/getBookByCategoryID/:id',getBookByCategoryId)
 
 // POST a new book
 router.post('/',createBook)
