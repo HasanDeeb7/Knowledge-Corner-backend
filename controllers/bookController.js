@@ -47,6 +47,8 @@ export const getBook = async (req, res) => {
 // }
 
 
+// create a new book with upload image
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'images/');
@@ -60,28 +62,32 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
 
   export const createBook = async (req, res) => {
+    
+
     upload.single('image')(req, res, async function (err) {
       if (err) {
         return res.status(400).json({ error: err.message });
       }
   
-      const { title, ISBN, publicationDate, description, nbPages, author, language, rating } = req.body;
+      const { title, ISBN, publicationDate, description, nbPages, authorId,categoryId ,language, rating } = req.body;
   
       if (!req.file) {
         return res.status(400).json({ error: 'Please upload an image' });
       }
-  
+
+      // Find the author using the provided author ID
+      // const author = await Author.findById(authorId);
+
       const image = req.file.path;
   
       try {
-        const book = await Book.create({ title, ISBN, publicationDate, description, nbPages, author, image, language, rating });
+        const book = await Book.create({ title, ISBN, publicationDate, description, nbPages, authorId,categoryId ,image, language, rating });
 
-        // Find the author using the provided author ID
-        const authorObj = await Author.findById(author);
+        
 
-        // Push the book's ID to the author's books array
-        authorObj.books.push(book._id);
-        await authorObj.save();
+        // // Push the book's ID to the author's books array
+        // authorObj.books.push(book._id);
+        // await authorObj.save();
   
         res.status(200).json(book);
       } catch (error) {

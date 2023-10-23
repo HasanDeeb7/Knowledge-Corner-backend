@@ -42,12 +42,6 @@ const AuthorSchema = new Schema({
   image: {
     type: String,
     required: false,
-  },
-  books: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Book",
-    },
-  ],
+  }
 });
 export default mongoose.model("Author", AuthorSchema);
