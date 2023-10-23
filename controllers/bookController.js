@@ -12,6 +12,24 @@ export const getBooks = async (req, res) => {
     res.status(200).json(books)
 }
 
+// get book by autherId
+
+export const getBookByAutherId = async (req, res) => {
+
+  const Id = req.params.id; // Assuming the author ID is passed as a URL parameter
+
+  if (!mongoose.Types.ObjectId.isValid(Id)) {
+      return res.status(404).json({ error: 'No such Auther' })
+  }
+
+  const book = await Book.find({authorId:Id})
+
+  if (!book) {
+      return res.status(404).json({ error: "No such a book" })
+  }
+
+  res.status(200).json(book)
+}
 
 // get a single book
 

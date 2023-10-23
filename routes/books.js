@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import {createBook , getBooks , getBook , deleteBook , updateBook} from '../controllers/bookController.js'
+import {createBook , getBooks , getBook , deleteBook , updateBook , getBookByAutherId} from '../controllers/bookController.js'
 
 
   
@@ -13,6 +13,9 @@ const router = express.Router()
 
 // GET a single book
 router.get('/:id',getBook)
+
+// GET book by autherID
+router.get('/getBookByAutherID/:id',getBookByAutherId)
 
 // POST a new book
 router.post('/',createBook)
