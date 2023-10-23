@@ -2,6 +2,7 @@ import Book from '../models/bookModel.js'
 import mongoose from 'mongoose'
 import multer from 'multer';
 import path from 'path';
+import Author from "../models/authorModel.js";
 
 // get all books
 
@@ -74,6 +75,13 @@ const storage = multer.diskStorage({
   
       try {
         const book = await Book.create({ title, ISBN, publicationDate, description, nbPages, author, image, language, rating });
+
+        // Find the author using the provided author ID
+        const authorObj = await Author.findById(author);
+
+        // Push the book's ID to the author's books array
+        authorObj.books.push(book._id);
+        await authorObj.save();
   
         res.status(200).json(book);
       } catch (error) {
