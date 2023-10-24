@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Author from "../models/authorModel.js";
+import { upload } from "../middleware/multer.js";
 
 //get all authors
 export const getAuthors = async (request, response) => {
@@ -20,6 +21,11 @@ export const getAuthor = async (request, response) => {
 };
 //create author
 export const createAuthor = async (request, response) => {
+  upload.single("image")(request, response, async function (err){
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    
   const {
     firstName,
     lastName,
@@ -29,9 +35,17 @@ export const createAuthor = async (request, response) => {
     twitterLink,
     linkedinLink,
     blogLink,
-    rating,
-    image,
+    rating
   } = request.body;
+
+  if (!request.file) {
+    request.file = {
+      path: 'images/default-image.png',
+      filename: 'default-image.pngg',
+    };
+  }
+  
+  const image = request.file.path;
   try {
     const author = await Author.create({
       firstName,
@@ -43,12 +57,13 @@ export const createAuthor = async (request, response) => {
       linkedinLink,
       blogLink,
       rating,
-      image,
+      image
     });
     response.status(200).json(author);
   } catch (error) {
     response.status(400).json({ error: error.message });
   }
+});
 };
 //delete author
 export const deleteAuthor = async (request, response) => {
