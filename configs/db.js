@@ -14,5 +14,4 @@ const connect = async () => {
       throw error;
     }
   }; 
-  
 export default connect

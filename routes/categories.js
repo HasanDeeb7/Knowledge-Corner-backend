@@ -2,6 +2,7 @@ import express from "express";
 import {
   createCtegory,
   getCtegory,
+  getCtegories,
   deleteCtegory,
   updateCtegory,
 } from "../controllers/categorieController.js";
@@ -9,10 +10,10 @@ import {
 const router = express.Router();
 
 // GET all books
-router.get("/", getCtegory);
+router.get("/", getCtegories);
 
-// // GET a single book
-// router.get("/:id", getCtegory);
+// GET a single category
+router.get("/:id", getCtegory);
 
 // // POST a new catrgory
 router.post("/", createCtegory);
