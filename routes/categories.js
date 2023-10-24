@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createCtegory,
+  getCtegories,
   getCtegory,
   deleteCtegory,
   updateCtegory,
@@ -9,7 +10,7 @@ import {
 const router = express.Router();
 
 // GET all categories
-router.get("/", getCtegory);
+router.get("/", getCtegories);
 
 // // GET a single category
 router.get("/:id", getCtegory);

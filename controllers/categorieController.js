@@ -4,11 +4,30 @@ import mongoose from "mongoose";
 
 // get all Categories
 
-export const getCtegory = async (req, res) => {
+export const getCtegories = async (req, res) => {
   const categories = await Category.find({}).sort({ createdAt: -1 });
 
   res.status(200).json(categories);
 };
+
+// get a single category
+
+export const getCtegory = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "No such catedory" });
+  }
+
+  const category = await Category.findById(id);
+
+  if (!category) {
+    return res.status(404).json({ error: "No such a category" });
+  }
+
+  res.status(200).json(category);
+};
+
 
 // add categry to db
 export const createCtegory = async (req, res) => {
