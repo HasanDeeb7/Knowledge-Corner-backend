@@ -11,24 +11,6 @@ export const getCtegories = async (req, res) => {
   res.status(200).json(categories);
 };
 
-// get a single category
-
-export const getCtegory = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such catedory" });
-  }
-
-  const category = await Category.findById(id);
-
-  if (!category) {
-    return res.status(404).json({ error: "No such a category" });
-  }
-
-  res.status(200).json(category);
-};
-
 // add categry to db
 export const createCtegory = async (req, res) => {
   const { name } = req.body;
