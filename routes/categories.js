@@ -8,19 +8,20 @@ import {
 
 const router = express.Router();
 
-// GET all books
+// GET all categories
 router.get("/", getCtegory);
 
-// // GET a single book
-// router.get("/:id", getCtegory);
+// // GET a single category
+router.get("/:id", getCtegory);
 
 // // POST a new catrgory
 router.post("/", createCtegory);
 
-// DELETE a new book
+// DELETE a category
 router.delete("/:id", deleteCtegory);
 
 // // // UPDATE a category
 router.patch("/:id", updateCtegory);
 
 export default router;
+
