@@ -160,16 +160,13 @@ export const updateBook = async (req, res) => {
     return res.status(404).json({ error: "No such book" });
   }
 
-  const book = await Book.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
-  );
+    const book = await Book.findOneAndUpdate({ _id: id }, {
+        ...req.body
+    })
 
-  if (!book) {
-    return res.status(404).json({ error: "No such a book" });
-  }
+    if (!book) {
+        return res.status(404).json({ error: "No such a book" })
+    }
 
   res.status(200).json(book);
 };
