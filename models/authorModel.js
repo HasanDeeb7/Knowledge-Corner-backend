@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
-
+//Author Schema
 const AuthorSchema = new Schema({
   firstName: {
     type: String,
@@ -11,6 +11,7 @@ const AuthorSchema = new Schema({
     type: String,
     required: true,
   },
+  //Date of birth of the author
   dob: {
     type: Date,
     required: false,
@@ -31,6 +32,7 @@ const AuthorSchema = new Schema({
     type: String,
     required: false,
   },
+  //Blog or website link of the author
   blogLink: {
     type: String,
     required: false,
@@ -38,6 +40,8 @@ const AuthorSchema = new Schema({
   rating: {
     type: String,
     default: 0,
+    min: 0, 
+    max: 5, 
   },
   image: {
     type: String,

@@ -12,15 +12,15 @@ const router = express.Router();
 router.get("/", getAuthors);
 
 //Get an authors
-router.get("/:id", getAuthor);
+router.get("/singleauthor", getAuthor);
 
 //Post an authors
 router.post("/", createAuthor);
 
 //Delete an author
-router.delete("/:id", deleteAuthor);
+router.delete("/", deleteAuthor);
 
 //Update an author
-router.patch("/:id", updateAuthor);
+router.patch("/", updateAuthor);
 
 export default router;
