@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-// GET all books
+// GET all categories
 router.get("/", getCtegories);
 
 // GET a single category
