@@ -18,7 +18,7 @@ router.get('/:id',getBook)
 router.get('/getBookByAutherID/:id',getBookByAutherId)
 
 // GET book by CategoryID
-router.get('/getBookByCategoryID/:id',getBookByCategoryId)
+router.get('/getBookByCategoryID/:name',getBookByCategoryId)
 
 // POST a new book
 router.post('/',createBook)

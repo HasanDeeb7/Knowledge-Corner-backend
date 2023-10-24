@@ -2,6 +2,7 @@ import Book from "../models/bookModel.js";
 import mongoose from "mongoose";
 import Author from "../models/authorModel.js";
 import { upload } from "../middleware/multer.js";
+import Category from "../models/categorieModel.js"
 // get all books
 
 export const getBooks = async (req, res) => {
@@ -30,21 +31,34 @@ export const getBookByAutherId = async (req, res) => {
 
 // get book by categoryID
 
+// export const getBookByCategoryId = async (req, res) => {
+//   const name = req.params.name; // Assuming the author ID is passed as a URL parameter
+
+//   const book = await Book.find({ categoryId: name });
+
+//   if (!book) {
+//     return res.status(404).json({ error: "No such a book" });
+//   }
+
+//   res.status(200).json(book);
+// };
+
 export const getBookByCategoryId = async (req, res) => {
-  const Id = req.params.id; // Assuming the author ID is passed as a URL parameter
+  const categoryName = req.params.name; // Assuming the category name is passed as a URL parameter
 
-  if (!mongoose.Types.ObjectId.isValid(Id)) {
-    return res.status(404).json({ error: "No such category" });
+  try {
+    const category = await Category.findOne({ name: categoryName });
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const books = await Book.find({ categoryId: category._id });
+    res.status(200).json(books);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
-  const book = await Book.find({ categoryId: Id });
-
-  if (!book) {
-    return res.status(404).json({ error: "No such a book" });
-  }
-
-  res.status(200).json(book);
 };
+
 
 // get a single book
 
