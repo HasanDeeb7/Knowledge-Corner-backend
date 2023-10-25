@@ -12,7 +12,6 @@ const router = express.Router();
 // GET all categories
 router.get("/", getCtegories);
 
-
 // GET a single book
 router.get("/:id", getCategory);
 
@@ -26,4 +25,3 @@ router.delete("/:id", deleteCtegory);
 router.patch("/:id", updateCtegory);
 
 export default router;
-

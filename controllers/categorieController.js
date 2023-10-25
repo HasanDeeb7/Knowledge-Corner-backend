@@ -1,11 +1,8 @@
-// newww one
-// import Book from "../models/bookModel.js";
-import Category from "../models/categorieModel.js"; //import model
-import mongoose from "mongoose";
+// Import necessary modules
+import Category from "../models/categorieModel.js"; // Import the Category model
+import mongoose from "mongoose"; // Import the Mongoose library
 
-
-// get a single category
-
+// Get a single category
 export const getCategory = async (req, res) => {
   const { id } = req.params;
 
@@ -13,6 +10,7 @@ export const getCategory = async (req, res) => {
     return res.status(404).json({ error: "No such category" });
   }
 
+  // Find and return a single category by its ID
   const category = await Category.findById(id);
 
   if (!category) {
@@ -22,18 +20,19 @@ export const getCategory = async (req, res) => {
   res.status(200).json(category);
 };
 
-// get all Categories
-
+// Get all Categories
 export const getCtegories = async (req, res) => {
+  // Retrieve all categories from the database and sort them by the 'createdAt' field in descending order
   const categories = await Category.find({}).sort({ createdAt: -1 });
 
   res.status(200).json(categories);
 };
 
-// add categry to db
+// Add a category to the database
 export const createCtegory = async (req, res) => {
   const { name } = req.body;
-  // add doc to db
+
+  // Attempt to create a new category document in the database
   try {
     const category = await Category.create({
       name,
@@ -44,26 +43,25 @@ export const createCtegory = async (req, res) => {
   }
 };
 
-// delete category from db
-
+// Delete a category from the database
 export const deleteCtegory = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such categories" });
+    return res.status(404).json({ error: "No such category" });
   }
 
+  // Find and delete a category by its ID
   var delcat = await Category.findOneAndDelete({ _id: id });
 
-  if (!Category) {
-    return res.status(400).json({ error: "No such a book" });
+  if (!delcat) {
+    return res.status(400).json({ error: "No such a category" });
   }
 
   res.status(200).json(delcat);
 };
 
-// update categories
-
+// Update a category
 export const updateCtegory = async (req, res) => {
   const { id } = req.params;
 
@@ -71,34 +69,17 @@ export const updateCtegory = async (req, res) => {
     return res.status(404).json({ error: "No such category" });
   }
 
+  // Find and update a category by its ID with the data from the request body
   const updCat = await Category.findOneAndUpdate(
     { _id: id },
     {
-      ...req.body,
+      ...req.body, // Update category with the data in the request body
     }
   );
 
-  if (!Category) {
-    return res.status(404).json({ error: "No such a categories" });
+  if (!updCat) {
+    return res.status(404).json({ error: "No such a category" });
   }
 
   res.status(200).json(updCat);
-};
-
-// {"title":
-// "Anothersss Book Title",
-// "ISBN":
-// "0987095434568",
-// "publicationDate":
-//  null,
-// "description":
-// "This is another sample book description.",
-// "nbPages":
-// 320,
-// "category":"newss",
-// "image":
-// "sefwsef",
-// "language":
-// "French",
-// "rating":
-// 4.2}
+}
