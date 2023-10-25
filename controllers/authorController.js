@@ -43,6 +43,37 @@ export const createAuthor = async (request, response) => {
       rating,
     } = request.body;
 
+    // Validate the inputs
+    if (!firstName || !lastName || !biography) {
+      return response
+        .status(400)
+        .json({ error: "Required fields are missing" });
+    }
+    const dobPattern = /^\d{4}-\d{2}-\d{2}$/;
+    if (dob && !dobPattern.test(dob)) {
+      return response
+        .status(400)
+        .json({ error: "Invalid date format" });
+    }
+    const urlPattern =
+      /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([/\w\.-]*)*\/?$/;
+    if (twitterLink && !urlPattern.test(twitterLink)) {
+      return response
+        .status(400)
+        .json({ error: "Invalid twitter link format" });
+    }
+
+    if (linkedinLink && !urlPattern.test(linkedinLink)) {
+      return response
+        .status(400)
+        .json({ error: "Invalid LinkedIn link format." });
+    }
+
+    if (blogLink && !urlPattern.test(blogLink)) {
+      return response
+        .status(400)
+        .json({ error: "Invalid blog link format" });
+    }
     if (!request.file) {
       request.file = {
         path: "images/default-image.png",
