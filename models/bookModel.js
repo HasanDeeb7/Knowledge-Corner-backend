@@ -60,7 +60,7 @@ const bookSchema = new Schema(
     image: {
       type: String, // Field type
       required: true, // Must be provided
-      match: /\.(jpg|jpeg|png)$/ // Should match a valid image file extension
+      // match: /\.(jpg|jpeg|png)$/ // Should match a valid image file extension
     },
 
     // Language of the book (String)

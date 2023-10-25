@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import Author from "../models/authorModel.js";
 import { upload } from "../middleware/multer.js";
 import Category from "../models/categorieModel.js"
+import fs from 'fs';
 
 // get all books
 
@@ -84,9 +85,13 @@ export const getBook = async (req, res) => {
   res.status(200).json(book);
 };
 
+
+
 // create a new book with upload image
 
 export const createBook = async (req, res) => {
+
+
   // Use Multer middleware to handle image upload and any potential errors.
   upload.single("image")(req, res, async function (err) {
     if (err) {
@@ -138,6 +143,66 @@ export const createBook = async (req, res) => {
   });
 };
 
+
+// i should check it
+
+
+// export const createBook = async (req, res) => {
+//   const {
+//     title,
+//     ISBN,
+//     publicationDate,
+//     description,
+//     nbPages,
+//     authorId,
+//     categoryId,
+//     language,
+//     rating,
+//   } = req.body;
+
+//   // Check if any of the required fields are missing, and return a 400 error if they are.
+//   if (!title || !ISBN || !publicationDate || !description || !nbPages || !authorId || !categoryId || !language || !rating) {
+//     return res.status(400).json({ error: "All book entities must be fulfilled." });
+//   }
+
+//   // Use Multer middleware to handle image upload and any potential errors.
+//   upload.single("image")(req, res, async function (err) {
+//     if (err) {
+//       return res.status(400).json({ error: err.message });
+//     }
+
+//     // Now, we can be sure that all required fields are present.
+//     // Retrieve the path of the uploaded image from Multer.
+//     const image = req.file ? req.file.path : undefined;
+
+//     try {
+//       // Create a new book in the database with the provided details, including the image path.
+//       const book = await Book.create({
+//         title,
+//         ISBN,
+//         publicationDate,
+//         description,
+//         nbPages,
+//         authorId,
+//         categoryId,
+//         image,
+//         language,
+//         rating,
+//       });
+
+//       // Send a JSON response with the newly created book and a 200 status code.
+//       res.status(200).json(book);
+//     } catch (error) {
+//       // Handle any potential errors that may occur during book creation and return a 400 error response with the error message.
+//       res.status(400).json({ error: error.message });
+//     }
+//   });
+// };
+
+
+
+
+
 // delete a book
 
 export const deleteBook = async (req, res) => {
@@ -161,27 +226,51 @@ export const deleteBook = async (req, res) => {
   res.status(200).json(book);
 };
 
-// update a book
+
+// update a book 
+
 
 export const updateBook = async (req, res) => {
-  // Extract the book's ID from the URL parameters.
   const { id } = req.params;
-
-  // Check if the provided ID is a valid MongoDB ObjectId. If not, return a 404 error.
+  // Validation for he type of the news ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such book" });
-  }
-
-  // Attempt to find and update the book by its ID with the provided request body data.
-    const book = await Book.findOneAndUpdate({ _id: id }, {
-        ...req.body
+    return res.status(404).json({
+      error: "Books not found"
     })
-
-    // If the book is not found, return a 404 error.
-    if (!book) {
-        return res.status(404).json({ error: "No such a book" })
+  }
+  // Fetch the current news post
+  const oldBook = await Book.findById(id)
+  // Delete the image from the local folder
+  fs.unlink(oldBook.image, (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: `error updating the photo`
+      })
     }
-
-    // Send a JSON response with the updated book and a 200 status code upon successful update.
-  res.status(200).json(book);
+  })
+  // Handle file upload and potential errors
+  upload.single('image')(req, res, async function (err) {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    try {
+      // Extract updated data from the request
+      const updatedData = req.body
+      const image = req.file.path;
+      updatedData.image = image;
+      // Update the news post and respond with the updated data
+      const updatedBook = await Book.findByIdAndUpdate(
+        { _id: id },
+        updatedData,
+        { new: true }
+      )
+      return res.json(updatedBook)
+    } catch (error) {
+      return res.status(500).json({
+        error: `Error, ${error.message}`
+      })
+    }
+  })
 };
+
+
