@@ -1,7 +1,9 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import { upload } from "../middleware/multer.js";
 import {createBook , getBooks , getBook , deleteBook , updateBook , getBookByAutherId,getBookByCategoryId} from '../controllers/bookController.js'
+
 
 
   
@@ -21,12 +23,12 @@ router.get('/getBookByAutherID/:id',getBookByAutherId)
 router.get('/getBookByCategoryID/:name',getBookByCategoryId)
 
 // POST a new book
-router.post('/',createBook)
+router.post('/',upload.single("image"),createBook)
 
 // // DELETE a new book
 router.delete('/:id',deleteBook)
 
 // // UPDATE a new book
-router.patch('/:id',updateBook)
+router.patch('/:id',upload.single('image'),updateBook)
 
 export default router;

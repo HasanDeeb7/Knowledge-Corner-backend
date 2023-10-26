@@ -15,7 +15,6 @@ const app = express();
 // Middleware Configuration
 // Parse JSON in incoming requests
 app.use(express.json())
-
 // Request Logging Middleware
 app.use((req, res, next) => {
   console.log(req.path, req.method);

@@ -15,7 +15,7 @@ router.get("/", getAuthors);
 router.get("/singleauthor", getAuthor);
 
 //Post an authors
-router.post("/", createAuthor);
+router.post("/",createAuthor);
 
 //Delete an author
 router.delete("/", deleteAuthor);

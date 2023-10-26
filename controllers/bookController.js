@@ -8,10 +8,10 @@ import fs from 'fs';
 // get all books
 
 export const getBooks = async (req, res) => {
-  // Retrieve all books from the database using the Mongoose model.
+  
   const books = await Book.find({});
 
-  // Send a JSON response with the retrieved books and a 200 status code.
+  
   res.status(200).json(books);
 };
 
@@ -26,7 +26,7 @@ export const getBookByAutherId = async (req, res) => {
     return res.status(404).json({ error: "No such Auther" });
   }
 
-  // Find books in the database with the specified authorId.
+  
   const book = await Book.find({ authorId: Id });
 
 
@@ -38,6 +38,8 @@ export const getBookByAutherId = async (req, res) => {
   res.status(200).json(book);
 };
 
+
+
 // get book by categoryName
 
 export const getBookByCategoryId = async (req, res) => {
@@ -47,7 +49,7 @@ export const getBookByCategoryId = async (req, res) => {
     // Attempt to find the category in the database based on the provided categoryName.
     const category = await Category.findOne({ name: categoryName });
 
-    // If the category does not exist, return a 404 error.
+    
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
@@ -56,7 +58,6 @@ export const getBookByCategoryId = async (req, res) => {
     const books = await Book.find({ categoryId: category._id });
     res.status(200).json(books);
   } catch (error) {
-    // Handle any potential errors and return a 500 error response with the error message.
     res.status(500).json({ error: error.message });
   }
 };
@@ -76,12 +77,10 @@ export const getBook = async (req, res) => {
   // Attempt to find the book in the database based on the provided ID.
   const book = await Book.findById(id);
 
-  // If the book does not exist, return a 404 error.
   if (!book) {
     return res.status(404).json({ error: "No such a book" });
   }
 
-  // Send a JSON response with the book details and a 200 status code.
   res.status(200).json(book);
 };
 
@@ -90,13 +89,7 @@ export const getBook = async (req, res) => {
 // create a new book with upload image
 
 export const createBook = async (req, res) => {
-
-
-  // Use Multer middleware to handle image upload and any potential errors.
-  upload.single("image")(req, res, async function (err) {
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
+ 
 
     // Extract book details and uploaded image from the request.
     const {
@@ -119,7 +112,7 @@ export const createBook = async (req, res) => {
     // Retrieve the path of the uploaded image from Multer.
     const image = req.file.path;
 
-    try {
+    try {           
       // Create a new book in the database with the provided details, including the image path.
       const book = await Book.create({
         title,
@@ -133,73 +126,13 @@ export const createBook = async (req, res) => {
         language,
         rating,
       });
-
-      // Send a JSON response with the newly created book and a 200 status code.
+      
       res.status(200).json(book);
     } catch (error) {
-      // Handle any potential errors that may occur during book creation and return a 400 error response with the error message.
       res.status(400).json({ error: error.message });
+      fs.unlinkSync(req.file.path);
     }
-  });
 };
-
-
-// i should check it
-
-
-// export const createBook = async (req, res) => {
-//   const {
-//     title,
-//     ISBN,
-//     publicationDate,
-//     description,
-//     nbPages,
-//     authorId,
-//     categoryId,
-//     language,
-//     rating,
-//   } = req.body;
-
-//   // Check if any of the required fields are missing, and return a 400 error if they are.
-//   if (!title || !ISBN || !publicationDate || !description || !nbPages || !authorId || !categoryId || !language || !rating) {
-//     return res.status(400).json({ error: "All book entities must be fulfilled." });
-//   }
-
-//   // Use Multer middleware to handle image upload and any potential errors.
-//   upload.single("image")(req, res, async function (err) {
-//     if (err) {
-//       return res.status(400).json({ error: err.message });
-//     }
-
-//     // Now, we can be sure that all required fields are present.
-//     // Retrieve the path of the uploaded image from Multer.
-//     const image = req.file ? req.file.path : undefined;
-
-//     try {
-//       // Create a new book in the database with the provided details, including the image path.
-//       const book = await Book.create({
-//         title,
-//         ISBN,
-//         publicationDate,
-//         description,
-//         nbPages,
-//         authorId,
-//         categoryId,
-//         image,
-//         language,
-//         rating,
-//       });
-
-//       // Send a JSON response with the newly created book and a 200 status code.
-//       res.status(200).json(book);
-//     } catch (error) {
-//       // Handle any potential errors that may occur during book creation and return a 400 error response with the error message.
-//       res.status(400).json({ error: error.message });
-//     }
-//   });
-// };
-
-
 
 
 
@@ -216,15 +149,14 @@ export const deleteBook = async (req, res) => {
 
   // Attempt to find and delete the book by its ID.
   const book = await Book.findOneAndDelete({ _id: id });
-
-  // If the book is not found, return a 400 error.
+  
   if (!book) {
     return res.status(400).json({ error: "No such a book" });
   }
-
-  // Send a JSON response with the deleted book and a 200 status code upon successful deletion.
+  
   res.status(200).json(book);
 };
+
 
 
 // update a book 
@@ -248,11 +180,7 @@ export const updateBook = async (req, res) => {
       })
     }
   })
-  // Handle file upload and potential errors
-  upload.single('image')(req, res, async function (err) {
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
+  
     try {
       // Extract updated data from the request
       const updatedData = req.body
@@ -270,7 +198,6 @@ export const updateBook = async (req, res) => {
         error: `Error, ${error.message}`
       })
     }
-  })
 };
 
 
