@@ -121,10 +121,15 @@ export const updateAuthor = async (request, response) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return response.status(404).json({ error: "no such author" });
   }
+
+  const updatedData = request.body
+      const image = request.file.path;
+      updatedData.image = image;
+
   const author = await Author.findByIdAndUpdate(
     { _id: id },
     {
-      ...request.body,
+      updatedData,
     },
     { new: true }
   );
