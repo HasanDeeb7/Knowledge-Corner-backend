@@ -149,12 +149,15 @@ export const deleteBook = async (req, res) => {
 
   // Attempt to find and delete the book by its ID.
   const book = await Book.findOneAndDelete({ _id: id });
+  fs.unlinkSync(book.image);
   
   if (!book) {
     return res.status(400).json({ error: "No such a book" });
   }
   
+  
   res.status(200).json(book);
+  
 };
 
 
@@ -170,28 +173,37 @@ export const updateBook = async (req, res) => {
       error: "Books not found"
     })
   }
+
+  
   // Fetch the current news post
   const oldBook = await Book.findById(id)
-  // Delete the image from the local folder
-  fs.unlink(oldBook.image, (err) => {
-    if (err) {
-      return res.status(500).json({
-        error: `error updating the photo`
-      })
-    }
-  })
   
     try {
       // Extract updated data from the request
       const updatedData = req.body
-      const image = req.file.path;
-      updatedData.image = image;
+      
       // Update the news post and respond with the updated data
       const updatedBook = await Book.findByIdAndUpdate(
         { _id: id },
         updatedData,
         { new: true }
       )
+
+      if(req.file){
+
+        const image = req.file.path;
+      updatedData.image = image;
+
+        // Delete the image from the local folder
+      fs.unlink(oldBook.image, (err) => {
+        if (err) {
+          return res.status(500).json({
+            error: `error updating the photo`
+          })
+        }
+      })
+      }
+
       return res.json(updatedBook)
     } catch (error) {
       return res.status(500).json({

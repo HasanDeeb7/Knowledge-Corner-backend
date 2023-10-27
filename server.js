@@ -15,6 +15,11 @@ const app = express();
 // Middleware Configuration
 // Parse JSON in incoming requests
 app.use(express.json())
+
+// to make the images static
+app.use(express.static('images'))
+
+
 // Request Logging Middleware
 app.use((req, res, next) => {
   console.log(req.path, req.method);
