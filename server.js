@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import bookRoutes from "./routes/books.js";
 import authorRoutes from "./routes/authors.js";
 import categorieRoutes from "./routes/categories.js";
+import cors from "cors"
 
 import connect from "./configs/db.js";
 
@@ -18,6 +19,9 @@ app.use(express.json())
 
 // to make the images static
 app.use(express.static('images'))
+
+// Enable CORS for all routes
+app.use(cors());
 
 
 // Request Logging Middleware
