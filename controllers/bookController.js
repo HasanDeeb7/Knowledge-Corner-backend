@@ -110,7 +110,8 @@ export const createBook = async (req, res) => {
     }
 
     // Retrieve the path of the uploaded image from Multer.
-    const image = req.file.path;
+    // const image = req.file.path;
+    const path = "images/"+req.file.filename
 
     try {           
       // Create a new book in the database with the provided details, including the image path.
@@ -122,7 +123,7 @@ export const createBook = async (req, res) => {
         nbPages,
         authorId,
         categoryId,
-        image,
+        image:path,
         language,
         rating,
       });
@@ -149,7 +150,7 @@ export const deleteBook = async (req, res) => {
 
   // Attempt to find and delete the book by its ID.
   const book = await Book.findOneAndDelete({ _id: id });
-  fs.unlinkSync(book.image);
+  // fs.unlinkSync(book.image);
   
   if (!book) {
     return res.status(400).json({ error: "No such a book" });
@@ -191,8 +192,10 @@ export const updateBook = async (req, res) => {
 
       if(req.file){
 
-        const image = req.file.path;
-      updatedData.image = image;
+        const path = "images/"+req.file.filename
+
+        // const image = req.file.path;
+      updatedData.image = path;
 
         // Delete the image from the local folder
       fs.unlink(oldBook.image, (err) => {

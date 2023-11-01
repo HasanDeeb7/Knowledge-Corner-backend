@@ -4,6 +4,9 @@ import bookRoutes from "./routes/books.js";
 import authorRoutes from "./routes/authors.js";
 import categorieRoutes from "./routes/categories.js";
 import cors from "cors"
+import path from "path";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 import connect from "./configs/db.js";
 
@@ -18,7 +21,10 @@ const app = express();
 app.use(express.json())
 
 // to make the images static
-app.use(express.static('images'))
+app.use(express.static('public'))
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+// app.use('/static', express.static(path.join(__dirname, 'public')))
 
 // Enable CORS for all routes
 app.use(cors());
