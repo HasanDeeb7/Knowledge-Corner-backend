@@ -3,7 +3,18 @@ import mongoose from "mongoose";
 import Author from "../models/authorModel.js";
 import { upload } from "../middleware/multer.js";
 import Category from "../models/categorieModel.js"
+import path from "path";
 import fs from 'fs';
+
+
+export const getBooksByLimit = async (req, res) => {
+  const limit = req.query.limit || 6; // Default to 6 if limit is not provided in the query params
+  const books = await Book.find({}).limit(parseInt(limit));
+
+  res.status(200).json(books);
+};
+
+
 
 // get all books
 
@@ -110,8 +121,8 @@ export const createBook = async (req, res) => {
     }
 
     // Retrieve the path of the uploaded image from Multer.
-    // const image = req.file.path;
-    const path = "images/"+req.file.filename
+    const image = req.file.filename;
+    // const path = "images/"+req.file.filename
 
     try {           
       // Create a new book in the database with the provided details, including the image path.
@@ -123,7 +134,7 @@ export const createBook = async (req, res) => {
         nbPages,
         authorId,
         categoryId,
-        image:path,
+        image,
         language,
         rating,
       });
@@ -131,7 +142,7 @@ export const createBook = async (req, res) => {
       res.status(200).json(book);
     } catch (error) {
       res.status(400).json({ error: error.message });
-      fs.unlinkSync(req.file.path);
+      fs.unlinkSync(req.file.filename);
     }
 };
 
@@ -182,6 +193,27 @@ export const updateBook = async (req, res) => {
     try {
       // Extract updated data from the request
       const updatedData = req.body
+
+      const oldImagePath = `public/images/${oldBook.image}`;
+
+      console.log('Old Image Path:', oldBook.image);
+
+
+      if(req.file){
+
+        updatedData.image=req.file.filename;
+
+        fs.unlink(oldImagePath,(err)=>{
+          if(err){
+            return res.status(500).json({
+              error: `error deleting the old image`
+            })
+          }
+        })        
+        
+      }
+
+      
       
       // Update the news post and respond with the updated data
       const updatedBook = await Book.findByIdAndUpdate(
@@ -189,23 +221,6 @@ export const updateBook = async (req, res) => {
         updatedData,
         { new: true }
       )
-
-      if(req.file){
-
-        const path = "images/"+req.file.filename
-
-        // const image = req.file.path;
-      updatedData.image = path;
-
-        // Delete the image from the local folder
-      fs.unlink(oldBook.image, (err) => {
-        if (err) {
-          return res.status(500).json({
-            error: `error updating the photo`
-          })
-        }
-      })
-      }
 
       return res.json(updatedBook)
     } catch (error) {
