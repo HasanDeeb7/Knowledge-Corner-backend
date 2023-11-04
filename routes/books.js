@@ -2,13 +2,16 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { upload } from "../middleware/multer.js";
-import {createBook , getBooks , getBook , deleteBook , updateBook , getBookByAutherId,getBookByCategoryId} from '../controllers/bookController.js'
+import {createBook , getBooks , getBook , deleteBook , updateBook , getBookByAutherId,getBookByCategoryId,getBooksByLimit} from '../controllers/bookController.js'
 
 
 
   
 
 const router = express.Router()
+
+router.get('/limitedBooks',getBooksByLimit)
+
 
 // GET all books
  router.get('/',getBooks)
