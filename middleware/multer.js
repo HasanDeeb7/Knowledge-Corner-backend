@@ -19,4 +19,14 @@ const storage = multer.diskStorage({
   },
 });
 
-export const upload = multer({ storage: storage });
+export const upload = multer({ storage: storage,
+  fileFilter: (req,file,cb)=>{
+    if(file.mimetype=='image/jpeg' || file.mimetype=='image/jpg' || file.mimetype=='image/png' || file.mimetype=='image/webp'){
+      cb(null,true)
+    }
+    else{
+      cb(null,false);
+      return cb(new Error('only jpg , jpeg and png allowed'))
+    }
+  }
+ });
