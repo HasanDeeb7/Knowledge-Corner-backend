@@ -20,7 +20,7 @@ router.get("/singleauthor", getAuthor);
 router.post("/",upload.single('image'),createAuthor);
 
 //Delete an author
-router.delete("/", deleteAuthor);
+router.delete("/:id", deleteAuthor);
 
 //Update an author
 router.patch("/:id",upload.single('image') ,updateAuthor);
