@@ -7,7 +7,6 @@ import cors from "cors"
 import path from "path";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-
 import connect from "./configs/db.js";
 
 // Load environment variables from a .env file

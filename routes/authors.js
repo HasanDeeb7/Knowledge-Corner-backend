@@ -7,6 +7,7 @@ import {
   updateAuthor,
 } from "../controllers/authorController.js";
 import { upload } from "../middleware/multer.js";
+
 const router = express.Router();
 
 //Get all authors
@@ -22,6 +23,6 @@ router.post("/",upload.single('image'),createAuthor);
 router.delete("/", deleteAuthor);
 
 //Update an author
-router.patch("/",upload.single('image') ,updateAuthor);
+router.patch("/:id",upload.single('image') ,updateAuthor);
 
 export default router;

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Author from "../models/authorModel.js";
 import { upload } from "../middleware/multer.js";
+import fs from 'fs';
 
 //get all authors
 //@param {Object} request  -  @param {Object} response
@@ -26,11 +27,6 @@ export const getAuthor = async (request, response) => {
 //create author
 //@returns {Object} The created author object.
 export const createAuthor = async (request, response) => {
-  upload.single("image")(request, response, async function (err) {
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
-
     const {
       firstName,
       lastName,
@@ -51,9 +47,7 @@ export const createAuthor = async (request, response) => {
     }
     const dobPattern = /^\d{4}-\d{2}-\d{2}$/;
     if (dob && !dobPattern.test(dob)) {
-      return response
-        .status(400)
-        .json({ error: "Invalid date format" });
+      return response.status(400).json({ error: "Invalid date format" });
     }
     const urlPattern =
       /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([/\w\.-]*)*\/?$/;
@@ -70,14 +64,12 @@ export const createAuthor = async (request, response) => {
     }
 
     if (blogLink && !urlPattern.test(blogLink)) {
-      return response
-        .status(400)
-        .json({ error: "Invalid blog link format" });
+      return response.status(400).json({ error: "Invalid blog link format" });
     }
     if (!request.file) {
       request.file = {
         path: "images/default-image.png",
-        filename: "default-image.pngg",
+        filename: "default-image.png",
       };
     }
 
@@ -98,13 +90,14 @@ export const createAuthor = async (request, response) => {
       response.status(200).json(author);
     } catch (error) {
       response.status(400).json({ error: error.message });
+      fs.unlinkSync(request.file.filename);
     }
-  });
+
 };
 //delete author
 //@returns {Object} The deleted author object.
 export const deleteAuthor = async (request, response) => {
-  const { id } = request.body;
+  const { id } = request.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return response.status(404).json({ error: "no such author" });
   }
@@ -114,27 +107,45 @@ export const deleteAuthor = async (request, response) => {
   }
   response.status(200).json(author);
 };
+
 // update author
 //@returns {Object} The updated author object
 export const updateAuthor = async (request, response) => {
-  const { id } = request.body;
+  const { id } = request.params;
+  const updatedData = request.body;
+
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return response.status(404).json({ error: "no such author" });
   }
 
-  const updatedData = request.body
-      const image = request.file.path;
-      updatedData.image = image;
+  const oldAuthor = await Author.findById(id);
+  
+  const oldImagePath = `public/images/${oldAuthor.image}`;
+
+  if (request.file && request.file.filename !== "default-image.png") {
+
+    updatedData.image=request.file.filename;
+
+    // Delete the image from the local folder
+    fs.unlink(oldImagePath, (err) => {
+      if (err) {
+        return response.status(500).json({
+          error: `error updating the photo`,
+        });
+      }
+    });
+  }
 
   const author = await Author.findByIdAndUpdate(
     { _id: id },
-    {
-      updatedData,
-    },
+
+    updatedData,
+
     { new: true }
   );
   if (!author) {
     return response.status(404).json({ error: "no such author" });
   }
   response.status(200).json(author);
-};
+  fs.unlinkSync(request.file.filename);
+}; 
