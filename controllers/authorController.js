@@ -14,7 +14,7 @@ export const getAuthors = async (request, response) => {
 //get an author
 //@returns {Object} The author object with the specified ID
 export const getAuthor = async (request, response) => {
-  const { id } = request.body;
+  const { id } = request.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return response.status(404).json({ error: "no such author" });
   }
@@ -68,12 +68,11 @@ export const createAuthor = async (request, response) => {
     }
     if (!request.file) {
       request.file = {
-        path: "images/default-image.png",
         filename: "default-image.png",
       };
     }
 
-    const image = request.file.path;
+    const image = request.file.filename;
     try {
       const author = await Author.create({
         firstName,
@@ -135,7 +134,6 @@ export const updateAuthor = async (request, response) => {
       }
     });
   }
-
   const author = await Author.findByIdAndUpdate(
     { _id: id },
 
@@ -144,8 +142,8 @@ export const updateAuthor = async (request, response) => {
     { new: true }
   );
   if (!author) {
+    fs.unlinkSync(request.file.filename);
     return response.status(404).json({ error: "no such author" });
   }
-  response.status(200).json(author);
-  fs.unlinkSync(request.file.filename);
+  return response.status(200).json(author);
 }; 
