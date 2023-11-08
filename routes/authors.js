@@ -14,15 +14,15 @@ const router = express.Router();
 router.get("/", getAuthors);
 
 //Get an authors
-router.get("/singleauthor", getAuthor);
+router.get("/:id", getAuthor);
 
 //Post an authors
 router.post("/",upload.single('image'),createAuthor);
 
 //Delete an author
-router.delete("/", deleteAuthor);
+router.delete("/:id", deleteAuthor);
 
 //Update an author
 router.patch("/:id",upload.single('image') ,updateAuthor);
-
-export default router;
+  
+export default router; 
