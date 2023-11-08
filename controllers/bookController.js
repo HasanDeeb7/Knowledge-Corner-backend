@@ -2,10 +2,9 @@ import Book from "../models/bookModel.js";
 import mongoose from "mongoose";
 import Author from "../models/authorModel.js";
 import { upload } from "../middleware/multer.js";
-import Category from "../models/categorieModel.js"
+import Category from "../models/categorieModel.js";
 import path from "path";
-import fs from 'fs';
-
+import fs from "fs";
 
 export const getBooksByLimit = async (req, res) => {
   const limit = req.query.limit || 6; // Default to 6 if limit is not provided in the query params
@@ -14,18 +13,13 @@ export const getBooksByLimit = async (req, res) => {
   res.status(200).json(books);
 };
 
-
-
 // get all books
 
 export const getBooks = async (req, res) => {
-  
   const books = await Book.find({});
 
-  
   res.status(200).json(books);
 };
-
 
 // get book by autherId
 
@@ -37,9 +31,7 @@ export const getBookByAutherId = async (req, res) => {
     return res.status(404).json({ error: "No such Auther" });
   }
 
-  
   const book = await Book.find({ authorId: Id });
-
 
   // If no books are found for the specified authorId, return a 404 error
   if (!book) {
@@ -48,8 +40,6 @@ export const getBookByAutherId = async (req, res) => {
 
   res.status(200).json(book);
 };
-
-
 
 // get book by categoryName
 
@@ -60,7 +50,6 @@ export const getBookByCategoryId = async (req, res) => {
     // Attempt to find the category in the database based on the provided categoryName.
     const category = await Category.findOne({ name: categoryName });
 
-    
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
@@ -72,7 +61,6 @@ export const getBookByCategoryId = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // get a single book
 
@@ -95,15 +83,34 @@ export const getBook = async (req, res) => {
   res.status(200).json(book);
 };
 
-
-
 // create a new book with upload image
 
 export const createBook = async (req, res) => {
- 
+  // Extract book details and uploaded image from the request.
+  const {
+    title,
+    ISBN,
+    publicationDate,
+    description,
+    nbPages,
+    authorId,
+    categoryId,
+    language,
+    rating,
+  } = req.body;
 
-    // Extract book details and uploaded image from the request.
-    const {
+  // Check if an image file was uploaded. If not, return a 400 error.
+  if (!req.file) {
+    return res.status(400).json({ error: "Please upload an image" });
+  }
+
+  // Retrieve the path of the uploaded image from Multer.
+  const image = req.file.filename;
+  // const path = "images/"+req.file.filename
+
+  try {
+    // Create a new book in the database with the provided details, including the image path.
+    const book = await Book.create({
       title,
       ISBN,
       publicationDate,
@@ -111,42 +118,18 @@ export const createBook = async (req, res) => {
       nbPages,
       authorId,
       categoryId,
+      image,
       language,
       rating,
-    } = req.body;
+    });
 
-    // Check if an image file was uploaded. If not, return a 400 error.
-    if (!req.file) {
-      return res.status(400).json({ error: "Please upload an image" });
-    }
-
-    // Retrieve the path of the uploaded image from Multer.
-    const image = req.file.filename;
-    // const path = "images/"+req.file.filename
-
-    try {           
-      // Create a new book in the database with the provided details, including the image path.
-      const book = await Book.create({
-        title,
-        ISBN,
-        publicationDate,
-        description,
-        nbPages,
-        authorId,
-        categoryId,
-        image,
-        language,
-        rating,
-      });
-      
-      res.status(200).json(book);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-      fs.unlinkSync(req.file.filename);
-    }
+    res.status(200).json(book);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+    const path = `public/images/${req.file.filename}`;
+    fs.unlinkSync(path);
+  }
 };
-
-
 
 // delete a book
 
@@ -162,72 +145,57 @@ export const deleteBook = async (req, res) => {
   // Attempt to find and delete the book by its ID.
   const book = await Book.findOneAndDelete({ _id: id });
   // fs.unlinkSync(book.image);
-  
+
   if (!book) {
     return res.status(400).json({ error: "No such a book" });
   }
-  
-  
+
   res.status(200).json(book);
-  
 };
 
-
-
-// update a book 
-
+// update a book
 
 export const updateBook = async (req, res) => {
   const { id } = req.params;
   // Validation for he type of the news ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
-      error: "Books not found"
-    })
+      error: "Books not found",
+    });
   }
 
-  
   // Fetch the current news post
-  const oldBook = await Book.findById(id)
-  
-    try {
-      // Extract updated data from the request
-      const updatedData = req.body
+  const oldBook = await Book.findById(id);
 
-      const oldImagePath = `public/images/${oldBook.image}`;
+  try {
+    // Extract updated data from the request
+    const updatedData = req.body;
 
-      console.log('Old Image Path:', oldBook.image);
+    const oldImagePath = `public/images/${oldBook.image}`;
 
+    console.log("Old Image Path:", oldBook.image);
 
-      if(req.file){
+    if (req.file) {
+      updatedData.image = req.file.filename;
 
-        updatedData.image=req.file.filename;
-
-        fs.unlink(oldImagePath,(err)=>{
-          if(err){
-            return res.status(500).json({
-              error: `error deleting the old image`
-            })
-          }
-        })        
-        
-      }
-
-      
-      
-      // Update the news post and respond with the updated data
-      const updatedBook = await Book.findByIdAndUpdate(
-        { _id: id },
-        updatedData,
-        { new: true }
-      )
-
-      return res.json(updatedBook)
-    } catch (error) {
-      return res.status(500).json({
-        error: `Error, ${error.message}`
-      })
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          return res.status(500).json({
+            error: `error deleting the old image`,
+          });
+        }
+      });
     }
+
+    // Update the news post and respond with the updated data
+    const updatedBook = await Book.findByIdAndUpdate({ _id: id }, updatedData, {
+      new: true,
+    });
+
+    return res.json(updatedBook);
+  } catch (error) {
+    return res.status(500).json({
+      error: `Error, ${error.message}`,
+    });
+  }
 };
-
-
