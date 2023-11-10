@@ -67,7 +67,7 @@ export const createAuthor = async (request, response) => {
       filename: "default-image.png",
     };
   }
-
+ 
   const image = request.file.filename;
   try {
     const author = await Author.create({
