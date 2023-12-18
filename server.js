@@ -5,7 +5,7 @@ import authorRoutes from "./routes/authors.js";
 import categorieRoutes from "./routes/categories.js";
 import cors from "cors";
 import connect from "./configs/db.js";
-
+import userRouter from './routes/user.js'
 // Load environment variables from a .env file
 dotenv.config();
 
@@ -35,6 +35,7 @@ app.use((req, res, next) => {
 app.use("/api/books", bookRoutes);
 app.use("/api/authors", authorRoutes);
 app.use("/api/categories", categorieRoutes);
+app.use("/api/user",userRouter)
 
 // Start the Express.js application on the specified port
 app.listen(process.env.PORT, () => {
