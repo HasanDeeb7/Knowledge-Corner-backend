@@ -3,10 +3,7 @@ import dotenv from "dotenv";
 import bookRoutes from "./routes/books.js";
 import authorRoutes from "./routes/authors.js";
 import categorieRoutes from "./routes/categories.js";
-import cors from "cors"
-import path from "path";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+import cors from "cors";
 import connect from "./configs/db.js";
 
 // Load environment variables from a .env file
@@ -17,17 +14,16 @@ const app = express();
 
 // Middleware Configuration
 // Parse JSON in incoming requests
-app.use(express.json())
+app.use(express.json());
 
 // to make the images static
-app.use(express.static('public'))
+app.use(express.static("public"));
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename);
 // app.use('/static', express.static(path.join(__dirname, 'public')))
 
 // Enable CORS for all routes
 app.use(cors());
-
 
 // Request Logging Middleware
 app.use((req, res, next) => {
@@ -40,9 +36,8 @@ app.use("/api/books", bookRoutes);
 app.use("/api/authors", authorRoutes);
 app.use("/api/categories", categorieRoutes);
 
-
 // Start the Express.js application on the specified port
 app.listen(process.env.PORT, () => {
   connect();
-  console.log("listening on port 4000");
+  console.log(`listening on port ${process.env.PORT}`);
 });

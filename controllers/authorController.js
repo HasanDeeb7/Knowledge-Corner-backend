@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Author from "../models/authorModel.js";
-import { upload } from "../middleware/multer.js";
 import fs from "fs";
 
 //get all authors
