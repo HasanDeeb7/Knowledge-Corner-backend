@@ -4,8 +4,9 @@ import bookRoutes from "./routes/books.js";
 import authorRoutes from "./routes/authors.js";
 import categorieRoutes from "./routes/categories.js";
 import cors from "cors";
-import connect from "./configs/db.js";
-import userRouter from './routes/user.js'
+import sequelize from "./configs/db.js";
+import userRouter from "./routes/user.js";
+import "./associations.js";
 // Load environment variables from a .env file
 dotenv.config();
 
@@ -23,7 +24,13 @@ app.use(express.static("public"));
 // app.use('/static', express.static(path.join(__dirname, 'public')))
 
 // Enable CORS for all routes
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 
 // Request Logging Middleware
 app.use((req, res, next) => {
@@ -35,10 +42,16 @@ app.use((req, res, next) => {
 app.use("/api/books", bookRoutes);
 app.use("/api/authors", authorRoutes);
 app.use("/api/categories", categorieRoutes);
-app.use("/api/user",userRouter)
+app.use("/api/user", userRouter);
+
+try {
+  await sequelize.authenticate();
+  console.log("Database Connected");
+} catch (error) {
+  console.log(error);
+}
 
 // Start the Express.js application on the specified port
 app.listen(process.env.PORT, () => {
-  connect();
   console.log(`listening on port ${process.env.PORT}`);
 });

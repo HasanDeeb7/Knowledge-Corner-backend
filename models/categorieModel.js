@@ -2,7 +2,7 @@ import Sequelize from 'sequelize'
 import sequelize from '../configs/db.js'
 
 const Category=sequelize.define('Category',{
-id:{
+
   id:{
     type:Sequelize.INTEGER,
     primaryKey:true,
@@ -12,7 +12,7 @@ id:{
     type:Sequelize.STRING,
     allowNull:false
   },
-}
+
 
 })
 

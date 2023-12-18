@@ -16,7 +16,7 @@ lastName:{
   allowNull:false
 },
   dob: {
-    type: Sequelize.Date,
+    type: Sequelize.DATE,
     allowNull: true,
   },
   nationality: {
@@ -25,7 +25,7 @@ lastName:{
   },
   biography: {
     type: Sequelize.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   twitterLink: {
     type: Sequelize.STRING,

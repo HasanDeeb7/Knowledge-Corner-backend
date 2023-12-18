@@ -104,10 +104,11 @@ export const createAuthor = async (request, response) => {
       rating,
       image,
     });
-    response.status(200).json(author);
+   
+   return response.status(200).json(author);
   } catch (error) {
     response.status(400).json({ error: error.message });
-    const path = `public/images/${req.file.filename}`;
+    const path = `public/images/${request.file.filename}`;
     if (fs.existsSync(path)) {
       fs.unlinkSync(path);
     } else {
@@ -115,56 +116,67 @@ export const createAuthor = async (request, response) => {
     }
   }
 };
+
+
+
 //delete author
 //@returns {Object} The deleted author object.
 export const deleteAuthor = async (request, response) => {
   const { id } = request.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return response.status(404).json({ error: "no such author" });
-  }
-  const author = await Author.findOneAndDelete({ _id: id });
-  if (!author) {
+try{
+  const author = await Author.findByPk(id);
+  if(!author){
     return response.status(404).json({ error: "no such authorr" });
+
   }
-  response.status(200).json(author);
+await author.destroy()
+  response.status(200).json('Author deleted successfully');
+}
+catch(error){
+response.status(500).json({message:err.message})}
+ 
 };
+
+
 
 // update author
 //@returns {Object} The updated author object
 export const updateAuthor = async (request, response) => {
   const { id } = request.params;
   const updatedData = request.body;
+  try{
+    const authorValid = await Author.findByPk(id);
+    if(!authorValid){
+      
+        fs.unlinkSync(request.file.filename);
+        return response.status(404).json({ error: "no such author" });
+      
+    }
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return response.status(404).json({ error: "no such author" });
+    const oldImagePath = `public/images/${authorValid.image}`;
+
+    if (request.file && request.file.filename !== "default-image.png") {
+      updatedData.image = request.file.filename;
+  
+      // Delete the image from the local folder
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          return response.status(500).json({
+            error: `error updating the photo`,
+          });
+        }
+      });
+    }
+    const updatedAuthor = await authorValid.update(
+
+      updatedData
+  
+    );
+   
+    return response.status(200).json(updatedAuthor);
   }
 
-  const oldAuthor = await Author.findById(id);
-
-  const oldImagePath = `public/images/${oldAuthor.image}`;
-
-  if (request.file && request.file.filename !== "default-image.png") {
-    updatedData.image = request.file.filename;
-
-    // Delete the image from the local folder
-    fs.unlink(oldImagePath, (err) => {
-      if (err) {
-        return response.status(500).json({
-          error: `error updating the photo`,
-        });
-      }
-    });
-  }
-  const author = await Author.findByIdAndUpdate(
-    { _id: id },
-
-    updatedData,
-
-    { new: true }
-  );
-  if (!author) {
-    fs.unlinkSync(request.file.filename);
-    return response.status(404).json({ error: "no such author" });
-  }
-  return response.status(200).json(author);
+  catch(error){
+    response.status(500).json({message:err.message})}
+ 
 };
