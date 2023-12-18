@@ -1,37 +1,41 @@
-import express from 'express';
-import multer from 'multer';
-import path from 'path';
+import express from "express";
+import multer from "multer";
+import path from "path";
 import { upload } from "../middleware/multer.js";
-import {createBook , getBooks , getBook , deleteBook , updateBook , getBookByAutherId,getBookByCategoryId,getBooksByLimit} from '../controllers/bookController.js'
+import {
+  createBook,
+  getBooks,
+  getBook,
+  deleteBook,
+  updateBook,
+  getBookByAutherId,
+  getBookByCategoryId,
+  getBooksByLimit,
+} from "../controllers/bookController.js";
 
+const router = express.Router();
 
-
-  
-
-const router = express.Router()
-
-router.get('/limitedBooks',getBooksByLimit)
-
+router.get("/limitedBooks", getBooksByLimit);
 
 // GET all books
- router.get('/',getBooks)
+router.get("/", getBooks);
 
 // GET a single book
-router.get('/:id',getBook)
+router.get("/getone", getBook);
 
 // GET book by autherID
-router.get('/getBookByAutherID/:id',getBookByAutherId)
+router.get("/getBookByAutherID/:id", getBookByAutherId);
 
 // GET book by CategoryID
-router.get('/getBookByCategoryID/:name',getBookByCategoryId)
+router.get("/getBookByCategoryID/:name", getBookByCategoryId);
 
 // POST a new book
-router.post('/',upload.single("image"),createBook)
+router.post("/add", upload.single("image"), createBook);
 
 // // DELETE a new book
-router.delete('/:id',deleteBook)
+router.delete("/delete", deleteBook);
 
 // // UPDATE a new book
-router.patch('/:id',upload.single('image'),updateBook)
+router.patch("/update", upload.single("image"), updateBook);
 
 export default router;

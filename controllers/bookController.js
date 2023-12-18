@@ -16,7 +16,7 @@ export const getBooksByLimit = async (req, res) => {
 // get all books
 
 export const getBooks = async (req, res) => {
-  const books = await Book.find({});
+  const books = await Book.findAll();
 
   res.status(200).json(books);
 };
@@ -66,24 +66,19 @@ export const getBookByCategoryId = async (req, res) => {
 
 export const getBook = async (req, res) => {
   // Extract the book ID from the URL parameters.
-  const { id } = req.params;
+  const { id } = req.query;
 
-  // Check if the provided book ID is a valid ObjectId.
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such book" });
+  if (!id) {
+    return res.status(400).json({ error: "No id provided" });
   }
 
-  // Attempt to find the book in the database based on the provided ID.
-  const book = await Book.findById(id);
-
+  const book = await Book.findByPk(id);
   if (!book) {
-    return res.status(404).json({ error: "No such a book" });
+    return res.status(404).json({ error: "Book Not Found" });
   }
 
   res.status(200).json(book);
 };
-
-// create a new book with upload image
 
 export const createBook = async (req, res) => {
   // Extract book details and uploaded image from the request.
@@ -93,9 +88,8 @@ export const createBook = async (req, res) => {
     publicationDate,
     description,
     nbPages,
-    authorId,
-    categoryId,
     language,
+    authorName = "Unknown",
     rating,
   } = req.body;
 
@@ -116,15 +110,15 @@ export const createBook = async (req, res) => {
       publicationDate,
       description,
       nbPages,
-      authorId,
-      categoryId,
       image,
       language,
       rating,
+      authorName: authorName,
     });
 
     res.status(200).json(book);
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
     const path = `public/images/${req.file.filename}`;
     fs.unlinkSync(path);
@@ -135,45 +129,47 @@ export const createBook = async (req, res) => {
 
 export const deleteBook = async (req, res) => {
   // Extract the book's ID from the URL parameters.
-  const { id } = req.params;
+  const { id } = req.query;
 
   // Check if the provided ID is a valid MongoDB ObjectId. If not, return a 404 error.
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such book" });
+  if (!id) {
+    return res.status(400).json({ error: "No Id provided" });
   }
 
   // Attempt to find and delete the book by its ID.
-  const book = await Book.findOneAndDelete({ _id: id });
+  const book = await Book.destroy({ where: { id: id } });
   // fs.unlinkSync(book.image);
 
   if (!book) {
-    return res.status(400).json({ error: "No such a book" });
+    return res.status(404).json({ error: "Book not found" });
   }
 
-  res.status(200).json(book);
+  res.status(200).json({ success: "Book Deleted Successfuly" });
 };
 
 // update a book
 
 export const updateBook = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.query;
   // Validation for he type of the news ID
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!id) {
     return res.status(404).json({
-      error: "Books not found",
+      error: "No id provided",
     });
   }
 
   // Fetch the current news post
-  const oldBook = await Book.findById(id);
-
+  const book = await Book.findByPk(id);
+  if (!book) {
+    return res.status(404).json({ error: "Book not found" });
+  }
   try {
     // Extract updated data from the request
     const updatedData = req.body;
 
-    const oldImagePath = `public/images/${oldBook.image}`;
+    const oldImagePath = `public/images/${book.image}`;
 
-    console.log("Old Image Path:", oldBook.image);
+    console.log("Old Image Path:", book.image);
 
     if (req.file) {
       updatedData.image = req.file.filename;
@@ -188,11 +184,10 @@ export const updateBook = async (req, res) => {
     }
 
     // Update the news post and respond with the updated data
-    const updatedBook = await Book.findByIdAndUpdate({ _id: id }, updatedData, {
-      new: true,
-    });
+    book = { ...book, ...updatedData };
+    await book.save();
 
-    return res.json(updatedBook);
+    return res.json(book);
   } catch (error) {
     return res.status(500).json({
       error: `Error, ${error.message}`,
