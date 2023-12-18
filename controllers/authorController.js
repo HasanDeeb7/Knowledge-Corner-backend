@@ -1,27 +1,50 @@
 import mongoose from "mongoose";
-import Author from "../models/authorModel.js";
 import fs from "fs";
+import Author from "../models/authorModel.js";
 
 //get all authors
 //@param {Object} request  -  @param {Object} response
 //@returns {Object} An array of author objects
 //@throws {Error} If there is an error while retrieving authors
+
 export const getAuthors = async (request, response) => {
-  const authors = await Author.find({}).sort({ createdAt: -1 });
+
+  try{
+
+    const authors = await Author.findAll({
+      order:[[
+        'createdAt','DESC'
+      ]]
+    });
   response.status(200).json(authors);
+
+  }
+  catch(error){
+response.status(500).json({message:"ERROR FETCHING AUTHORS"})
+  }
+  
 };
+
+
 //get an author
 //@returns {Object} The author object with the specified ID
 export const getAuthor = async (request, response) => {
   const { id } = request.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return response.status(404).json({ error: "no such author" });
+
+  try{
+const author=await Author.findByPk(id)
+if(author){
+return  response.status(200).json(author);
+
+}
+return response.status(404).json({ error: "no such author" });
+
+
   }
-  const author = await Author.findById(id);
-  if (!author) {
-    return response.status(404).json({ error: "no such author" });
+  catch(error){
+    response.status(500).json({message:"ERROR FETCHING AUTHOR"})
+
   }
-  response.json(author);
 };
 //create author
 //@returns {Object} The created author object.
