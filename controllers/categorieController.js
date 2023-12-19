@@ -1,7 +1,7 @@
 // Import necessary modules
 import Category from '../models/categorieModel.js'
 // Get a single category
-export const getCategory = async (req, res) => {
+export const getCategory = async (request, response) => {
   const { id } = request.params;
 
   try{
@@ -30,11 +30,11 @@ export const getCtegories = async (req, res) => {
         'createdAt','DESC'
       ]]
     });
-  response.status(200).json(categories);
+  res.status(200).json(categories);
 
   }
   catch(error){
-response.status(500).json({message:"ERROR FETCHING categories"})
+res.status(500).json({message:"ERROR FETCHING categories"})
   }
 };
 
@@ -45,7 +45,7 @@ export const createCtegory = async (req, res) => {
   // Attempt to create a new category document in the database
   try {
     const category = await Category.create({
-      name,
+     Name: name,
     });
     res.status(200).json(category);
   } catch (error) {
@@ -54,7 +54,7 @@ export const createCtegory = async (req, res) => {
 };
 
 // Delete a category from the database
-export const deleteCtegory = async (req, res) => {
+export const deleteCtegory = async (req, response) => {
   const { id } = req.params;
 
   try{
@@ -77,17 +77,17 @@ export const deleteCtegory = async (req, res) => {
 // Update a category
 export const updateCtegory = async (req, res) => {
   const { id } = req.params;
-
+const {name}=req.body
   const category=await Category.findByPk(id)
   if(!category){
   return  response.status(404).json("Category Not found");
   
   }
   // Find and update a category by its ID with the data from the request body
-  const updCat = await category.update(
+  const updCat = await Category.update(
    
-      ...req.body, // Update category with the data in the request body
-    
+{ Name: name },
+      { where: { id: category.id } }     
   );
 
   if (!updCat) {

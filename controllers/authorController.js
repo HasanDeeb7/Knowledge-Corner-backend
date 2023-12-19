@@ -147,18 +147,19 @@ export const updateAuthor = async (request, response) => {
   try{
     const authorValid = await Author.findByPk(id);
     if(!authorValid){
-      
+      if(request.file){
         fs.unlinkSync(request.file.filename);
+
+      }
         return response.status(404).json({ error: "no such author" });
       
     }
 
-    const oldImagePath = `public/images/${authorValid.image}`;
+    const oldImagePath = authorValid.image?`public/images/${authorValid.image}`:null;
 
     if (request.file && request.file.filename !== "default-image.png") {
       updatedData.image = request.file.filename;
   
-      // Delete the image from the local folder
       fs.unlink(oldImagePath, (err) => {
         if (err) {
           return response.status(500).json({
@@ -167,16 +168,19 @@ export const updateAuthor = async (request, response) => {
         }
       });
     }
-    const updatedAuthor = await authorValid.update(
 
-      updatedData
-  
+    const updatedAuthor = await Author.update(
+
+      updatedData,
+      { where: { id: id } } 
     );
-   
     return response.status(200).json(updatedAuthor);
+   
   }
 
+  
   catch(error){
-    response.status(500).json({message:err.message})}
+    console.log(error)
+    response.status(500).json({message:error.message})}
  
 };
