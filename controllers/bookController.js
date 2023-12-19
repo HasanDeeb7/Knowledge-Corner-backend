@@ -23,15 +23,17 @@ export const getBooks = async (req, res) => {
 
 // get book by autherId
 
-export const getBookByAutherId = async (req, res) => {
-  const Id = req.params.id; // Assuming the author ID is passed as a URL parameter
+export const getBookByAuthorId = async (req, res) => {
+  const { id } = req.query; // Assuming the author ID is passed as a URL parameter
 
   // Check if the provided authorId is a valid ObjectId.
-  if (!mongoose.Types.ObjectId.isValid(Id)) {
-    return res.status(404).json({ error: "No such Auther" });
+  if (!id) {
+    return res.status(404).json({ error: "No id provided" });
   }
 
-  const book = await Book.find({ authorId: Id });
+  const book = await Book.findAll({
+    include: { model: Author, where: { id: id } },
+  });
 
   // If no books are found for the specified authorId, return a 404 error
   if (!book) {
@@ -89,20 +91,19 @@ export const createBook = async (req, res) => {
     description,
     nbPages,
     language,
-    authorName = "Unknown",
     rating,
+    authorId,
   } = req.body;
 
-  // Check if an image file was uploaded. If not, return a 400 error.
   if (!req.file) {
     return res.status(400).json({ error: "Please upload an image" });
   }
 
-  // Retrieve the path of the uploaded image from Multer.
   const image = req.file.filename;
-  // const path = "images/"+req.file.filename
 
   try {
+    const author = authorId ? await Author.findByPk(authorId) : null;
+
     // Create a new book in the database with the provided details, including the image path.
     const book = await Book.create({
       title,
@@ -113,8 +114,11 @@ export const createBook = async (req, res) => {
       image,
       language,
       rating,
-      authorName: authorName,
+      authorName: author ? `${author.firstName} ${author.lastName}` : "Unknown",
     });
+    if (author) {
+      book.setAuthor(author);
+    }
 
     res.status(200).json(book);
   } catch (error) {
