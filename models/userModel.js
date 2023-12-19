@@ -28,6 +28,9 @@ const User = sequelize.define("User", {
     allowNull: false,
     defaultValue: "user",
   },
+  status:{
+    type:DataTypes.ENUM("active","inactive")
+  }
 });
 
 export default User;
