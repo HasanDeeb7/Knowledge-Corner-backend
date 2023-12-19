@@ -72,6 +72,11 @@ const Book = sequelize.define(
       validate: { len: [0, 5] },
     },
     authorName: { type: DataTypes.STRING, defaultValue: "Unknown" },
+    categoryName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "Other",
+    },
   },
   { timestamps: true }
 ); // Automatically manage "createdAt" and "updatedAt" timestamps

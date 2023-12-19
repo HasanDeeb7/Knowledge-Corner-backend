@@ -16,7 +16,7 @@ export const getBooksByLimit = async (req, res) => {
 // get all books
 
 export const getBooks = async (req, res) => {
-  const books = await Book.findAll();
+  const books = await Book.findAll({include: [Author]});
 
   res.status(200).json(books);
 };
@@ -93,6 +93,7 @@ export const createBook = async (req, res) => {
     language,
     rating,
     authorId,
+    categoryName,
   } = req.body;
 
   if (!req.file) {
@@ -103,7 +104,9 @@ export const createBook = async (req, res) => {
 
   try {
     const author = authorId ? await Author.findByPk(authorId) : null;
-
+    const category = categoryName
+      ? await Category.findOne({ where: { Name: categoryName } })
+      : "Other";
     // Create a new book in the database with the provided details, including the image path.
     const book = await Book.create({
       title,
@@ -115,9 +118,13 @@ export const createBook = async (req, res) => {
       language,
       rating,
       authorName: author ? `${author.firstName} ${author.lastName}` : "Unknown",
+      categoryName: categoryName,
     });
     if (author) {
       book.setAuthor(author);
+    }
+    if (category) {
+      book.setCategory(category);
     }
 
     res.status(200).json(book);
