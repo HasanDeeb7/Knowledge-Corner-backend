@@ -7,7 +7,8 @@ export const signUp = async (req, res) => {
   const hashedPass = bcryptjs.hashSync(password, 10);
 
   try {
-    const userExist = await User.findOne({ email });
+    const userExist = await User.findOne({where:
+      { email }});
     if (userExist) {
       res.status(404).json({ message: "Email already Exists" });
     }
@@ -27,7 +28,7 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({where:{ email }});
     if (!user) {
       return res.status(404).json({ message: "User doesn't exist!" });
     }
@@ -64,7 +65,7 @@ export const signIn = async (req, res) => {
 export const getUser = async (req, res) => {
   const id = req.params.id;
   try {
-    const user = await User.findById(id);
+    const user = await User.findByPk(id);
     if (user) {
       res.status(200).json(user);
     }
@@ -77,7 +78,7 @@ export const getUser = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.findAll();
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users" });
@@ -87,7 +88,7 @@ export const getUsers = async (req, res) => {
 export const deleteUser = async (req, res) => {
   const { id } = req.params.id;
   try {
-    const user = await User.findByIdAndDelete(id);
+    const user = await User.destroy({where:{id:id}});
     if (!user) {
       res.status(404).json({ message: "User Not Found" });
     }
@@ -101,7 +102,7 @@ export const updateUser = async (req, res) => {
   const { id, firstName, lastName, email, password } = req.body;
 
   try {
-    const user = await User.findById(id);
+    const user = await User.findByPk(id);
     if (!user) {
       res.status(404).json({ message: "User Not Found" });
     }
