@@ -7,6 +7,7 @@ import cors from "cors";
 import sequelize from "./configs/db.js";
 import userRouter from "./routes/user.js";
 import "./associations.js";
+import libraryRoute from './routes/libraries.js'
 // Load environment variables from a .env file
 dotenv.config();
 
@@ -43,7 +44,7 @@ app.use("/api/books", bookRoutes);
 app.use("/api/authors", authorRoutes);
 app.use("/api/categories", categorieRoutes);
 app.use("/api/user", userRouter);
-
+app.use("/api/library",libraryRoute)
 try {
   await sequelize.authenticate();
   console.log("Database Connected");

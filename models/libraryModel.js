@@ -7,6 +7,9 @@ const Library = sequelize.define("Library", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  status:{
+    type:DataTypes.ENUM(['active','inactive'])
+  }
 });
 
 

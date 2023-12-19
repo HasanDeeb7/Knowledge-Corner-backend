@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../configs/db.js";
-import Library from "./libraryModel.js";
 
 // Create a Mongoose schema for the "Book" collection.
 const Book = sequelize.define(
