@@ -1,51 +1,46 @@
 // Import necessary modules
-import Category from '../models/categorieModel.js'
+import Category from "../models/categorieModel.js";
 // Get a single category
 export const getCategory = async (request, response) => {
   const { id } = request.params;
 
-  try{
-const category=await Category.findByPk(id)
-if(category){
-return  response.status(200).json(category);
-
-}
-return response.status(404).json({ error: "no such category" });
-
-
-  }
-  catch(error){
-    response.status(500).json({message:"ERROR FETCHING CATEGORY"})
-
+  try {
+    const category = await Category.findByPk(id);
+    if (category) {
+      return response.status(200).json(category);
+    }
+    return response.status(404).json({ error: "no such category" });
+  } catch (error) {
+    response.status(500).json({ message: "ERROR FETCHING CATEGORY" });
   }
 };
 
 // Get all Categories
 export const getCtegories = async (req, res) => {
   // Retrieve all categories from the database and sort them by the 'createdAt' field in descending order
-  try{
-
+  try {
     const categories = await Category.findAll({
-      order:[[
-        'createdAt','DESC'
-      ]]
+      order: [["createdAt", "DESC"]],
     });
-  res.status(200).json(categories);
-
-  }
-  catch(error){
-res.status(500).json({message:"ERROR FETCHING categories"})
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ message: "ERROR FETCHING categories" });
   }
 };
 
 // Add a category to the database
 export const createCtegory = async (req, res) => {
+  console.log(req.body);
   const { name } = req.body;
 
   // Attempt to create a new category document in the database
+  const existingCat = await Category.findOne({ where: { Name: name } });
+  if (existingCat) {
+    return res.error(400).json({ error: "Category already exists" });
+  }
   try {
     const category = await Category.create({
-     Name: name,
+      Name: name,
     });
     res.status(200).json(category);
   } catch (error) {
@@ -57,37 +52,30 @@ export const createCtegory = async (req, res) => {
 export const deleteCtegory = async (req, response) => {
   const { id } = req.params;
 
-  try{
-    const category=await Category.findByPk(id)
-    if(!category){
-    return  response.status(404).json("Category Not found");
-    
+  try {
+    const category = await Category.findByPk(id);
+    if (!category) {
+      return response.status(404).json("Category Not found");
     }
-    await category.destroy()
+    await category.destroy();
     return response.status(200).json("Category deleted");
-
-  
+  } catch (error) {
+    response.status(500).json({ message: err.message });
   }
-  catch(error){
-    response.status(500).json({message:err.message})}
- 
-
 };
 
 // Update a category
 export const updateCtegory = async (req, res) => {
   const { id } = req.params;
-const {name}=req.body
-  const category=await Category.findByPk(id)
-  if(!category){
-  return  response.status(404).json("Category Not found");
-  
+  const { name } = req.body;
+  const category = await Category.findByPk(id);
+  if (!category) {
+    return response.status(404).json("Category Not found");
   }
   // Find and update a category by its ID with the data from the request body
   const updCat = await Category.update(
-   
-{ Name: name },
-      { where: { id: category.id } }     
+    { Name: name },
+    { where: { id: category.id } }
   );
 
   if (!updCat) {
@@ -95,4 +83,4 @@ const {name}=req.body
   }
 
   res.status(200).json(updCat);
-}
+};

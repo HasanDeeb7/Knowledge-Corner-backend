@@ -1,20 +1,15 @@
-import Sequelize from 'sequelize'
-import sequelize from '../configs/db.js'
+import Sequelize from "sequelize";
+import sequelize from "../configs/db.js";
 
-const Author=sequelize.define('Author',{
-id:{
-  type:Sequelize.INTEGER,
-  primaryKey:true,
-  autoIncrement:true
-},
-firstName:{
-  type:Sequelize.STRING,
-  allowNull:false
-},
-lastName:{
-  type:Sequelize.STRING,
-  allowNull:false
-},
+const Author = sequelize.define("Author", {
+  firstName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  lastName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   dob: {
     type: Sequelize.DATE,
     allowNull: true,
@@ -42,17 +37,14 @@ lastName:{
   rating: {
     type: Sequelize.STRING,
     default: 0,
-    min: 0, 
-    max: 5, 
+    min: 0,
+    max: 5,
   },
   image: {
     type: Sequelize.STRING,
     allowNull: true,
-    defaultValue:"default-image.png"
-  }
+    defaultValue: "default-image.png",
+  },
+});
 
-
-})
-
-export default Author
-
+export default Author;

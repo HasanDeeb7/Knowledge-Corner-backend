@@ -8,7 +8,7 @@ import {
   getBook,
   deleteBook,
   updateBook,
-  getBookByAutherId,
+  getBookByAuthorId,
   getBookByCategoryId,
   getBooksByLimit,
 } from "../controllers/bookController.js";
@@ -24,7 +24,7 @@ router.get("/", getBooks);
 router.get("/getone", getBook);
 
 // GET book by autherID
-router.get("/getBookByAutherID/:id", getBookByAutherId);
+router.get("/getBookByAuthorId/", getBookByAuthorId);
 
 // GET book by CategoryID
 router.get("/getBookByCategoryID/:name", getBookByCategoryId);
