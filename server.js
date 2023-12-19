@@ -17,7 +17,7 @@ const app = express();
 // Middleware Configuration
 // Parse JSON in incoming requests
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 // to make the images static
 app.use(express.static("public"));
 // const __filename = fileURLToPath(import.meta.url);
