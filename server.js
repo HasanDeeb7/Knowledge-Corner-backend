@@ -8,6 +8,9 @@ import sequelize from "./configs/db.js";
 import userRouter from "./routes/user.js";
 import "./associations.js";
 import libraryRoute from './routes/libraries.js'
+
+import authenticate from './middleware/authenticate.js'
+import { checkRoles } from "./middleware/checkRoles.js";
 // Load environment variables from a .env file
 dotenv.config();
 
@@ -40,7 +43,7 @@ app.use((req, res, next) => {
 });
 
 // Define routes for books, authors, and categories
-app.use("/api/books", bookRoutes);
+app.use("/api/books",authenticate,bookRoutes);
 app.use("/api/authors", authorRoutes);
 app.use("/api/categories", categorieRoutes);
 app.use("/api/user", userRouter);

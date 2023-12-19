@@ -45,7 +45,7 @@ export const signIn = async (req, res) => {
       },
       process.env.JWT_SECRET
     );
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     res
       .cookie("access_token", token, {
@@ -54,7 +54,7 @@ export const signIn = async (req, res) => {
         sameSite: "None",
       })
       .status(200)
-      .json({ message: "Login successfull", user: decoded });
+      .json({ message: "Login successfull"});
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error Sign In" });

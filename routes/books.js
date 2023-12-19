@@ -12,7 +12,8 @@ import {
   getBookByCategoryId,
   getBooksByLimit,
 } from "../controllers/bookController.js";
-
+import authenticate from './middleware/authenticate.js'
+import { checkRoles } from "./middleware/checkRoles.js";
 const router = express.Router();
 
 router.get("/limitedBooks", getBooksByLimit);
@@ -33,7 +34,7 @@ router.get("/getBookByCategoryID/:name", getBookByCategoryId);
 router.post("/add", upload.single("image"), createBook);
 
 // // DELETE a new book
-router.delete("/delete", deleteBook);
+router.delete("/delete", authenticate, checkRoles(['admin','superadmin']),deleteBook);
 
 // // UPDATE a new book
 router.patch("/update", upload.single("image"), updateBook);
