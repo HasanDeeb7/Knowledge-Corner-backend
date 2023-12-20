@@ -1,4 +1,3 @@
-import sequelize from "../configs/db";
 import jwt from "jsonwebtoken";
 
 export function authenticate(req, res, next) {

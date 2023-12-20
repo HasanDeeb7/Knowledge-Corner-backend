@@ -12,8 +12,8 @@ import {
   getBookByCategoryId,
   getBooksByLimit,
 } from "../controllers/bookController.js";
-import authenticate from './middleware/authenticate.js'
-import { checkRoles } from "./middleware/checkRoles.js";
+import {authenticate} from '../middleware/authenticate.js'
+import  {checkRoles}  from "../middleware/checkRoles.js";
 const router = express.Router();
 
 router.get("/limitedBooks", getBooksByLimit);

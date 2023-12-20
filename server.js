@@ -9,7 +9,7 @@ import userRouter from "./routes/user.js";
 import "./associations.js";
 import libraryRoute from './routes/libraries.js'
 
-import authenticate from './middleware/authenticate.js'
+import {authenticate} from './middleware/authenticate.js'
 import { checkRoles } from "./middleware/checkRoles.js";
 // Load environment variables from a .env file
 dotenv.config();

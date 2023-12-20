@@ -67,7 +67,7 @@ const Book = sequelize.define(
     // Rating of the book (Number)
     rating: {
       type: DataTypes.INTEGER, // Field type
-      allowNull: false, // Must be provided
+      allowNull: true, // Must be provided
       validate: { len: [0, 5] },
     },
     authorName: { type: DataTypes.STRING, defaultValue: "Unknown" },
