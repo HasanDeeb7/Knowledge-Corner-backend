@@ -1,5 +1,5 @@
 import express from 'express'
-import {signUp,signIn,getUser,getUsers,deleteUser,updateUser} from '../controllers/userController.js'
+import {signUp,signIn,getUser,getUsers,deleteUser,updateUser,updateStatus} from '../controllers/userController.js'
 
  const userRouter=express.Router()
 
@@ -10,4 +10,5 @@ userRouter.get('/getUser/:id',getUser)
 userRouter.get('/getAll',getUsers)
 userRouter.delete('/delete/:id',deleteUser)
 userRouter.put('/update',updateUser)
+userRouter.patch('/status',updateStatus)
 export default userRouter

@@ -117,3 +117,22 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ message: "Error updating a user" });
   }
 };
+
+
+export const updateStatus=async(req,res)=>{
+  const{id,status}=req.body
+
+  try{
+    const user=await User.findByPk(id)
+    if(!user){
+      res.status(404).json({message:"User Not Found"})
+    }
+   user.status=status
+  await user.save()
+res.status(200).json("updated successfully")
+  }
+  catch(error){
+    res.status(500).json({ message: "Error updating a user status" });
+
+  }
+}
