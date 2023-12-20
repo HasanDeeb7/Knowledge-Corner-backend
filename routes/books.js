@@ -11,6 +11,7 @@ import {
   getBookByAuthorId,
   getBookByCategoryId,
   getBooksByLimit,
+  connectBookToLibrary,
 } from "../controllers/bookController.js";
 import {authenticate} from '../middleware/authenticate.js'
 import  {checkRoles}  from "../middleware/checkRoles.js";
@@ -38,5 +39,7 @@ router.delete("/delete", authenticate, checkRoles(['admin','superadmin']),delete
 
 // // UPDATE a new book
 router.patch("/update", upload.single("image"), updateBook);
+
+router.post("/addtolibrary", connectBookToLibrary);
 
 export default router;
