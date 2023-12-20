@@ -5,6 +5,7 @@ import { upload } from "../middleware/multer.js";
 import Category from "../models/categorieModel.js";
 import path from "path";
 import fs from "fs";
+import Library from "../models/libraryModel.js";
 
 export const getBooksByLimit = async (req, res) => {
   const limit = req.query.limit || 6; // Default to 6 if limit is not provided in the query params
@@ -16,7 +17,7 @@ export const getBooksByLimit = async (req, res) => {
 // get all books
 
 export const getBooks = async (req, res) => {
-  const books = await Book.findAll({include: [Author]});
+  const books = await Book.findAll({ include: [Author] });
 
   res.status(200).json(books);
 };
@@ -205,3 +206,15 @@ export const updateBook = async (req, res) => {
     });
   }
 };
+
+export async function connectBookToLibrary(req, res) {
+  try {
+    const { bookId, libraryId } = req.body;
+    const library = await Library.findByPk(libraryId);
+    const book = await Book.findByPk(bookId);
+    await library.setBooks(book);
+    res.json({ success: `${book.title} Added to ${library.name} library` });
+  } catch (error) {
+    console.log(error);
+  }
+}

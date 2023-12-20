@@ -1,6 +1,7 @@
 import bcryptjs from "bcryptjs";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import { where } from "sequelize";
 
 export const signUp = async (req, res) => {
   const { firstName, lastName, email, password, role } = req.body;
@@ -28,7 +29,7 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({where:{ email }});
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: "User doesn't exist!" });
     }
