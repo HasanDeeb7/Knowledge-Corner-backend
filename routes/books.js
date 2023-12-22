@@ -2,21 +2,13 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { upload } from "../middleware/multer.js";
-import {
-  createBook,
-  getBooks,
-  getBook,
-  deleteBook,
-  updateBook,
-  getBookByAuthorId,
-  getBookByCategoryId,
-  getBooksByLimit,
-} from "../controllers/bookController.js";
-import authenticate from './middleware/authenticate.js'
-import { checkRoles } from "./middleware/checkRoles.js";
+
+import { authenticate } from "../middleware/authenticate.js";
+import { createBook, deleteBook, getBook, getBooks } from "../controllers/bookController.js";
+import { checkRoles } from "../middleware/checkRoles.js";
 const router = express.Router();
 
-router.get("/limitedBooks", getBooksByLimit);
+// router.get("/limitedBooks", getBooksByLimit);
 
 // GET all books
 router.get("/", getBooks);
@@ -28,7 +20,7 @@ router.get("/getone", getBook);
 router.get("/getBookByAuthorId/", getBookByAuthorId);
 
 // GET book by CategoryID
-router.get("/getBookByCategoryID/:name", getBookByCategoryId);
+// router.get("/getBookByCategoryID/:name", getBookByCategoryId);
 
 // POST a new book
 router.post("/add", upload.single("image"), createBook);
