@@ -1,15 +1,13 @@
 import bcryptjs from "bcryptjs";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-import { where } from "sequelize";
 
 export const signUp = async (req, res) => {
   const { firstName, lastName, email, password, role } = req.body;
   const hashedPass = bcryptjs.hashSync(password, 10);
 
   try {
-    const userExist = await User.findOne({where:
-      { email }});
+    const userExist = await User.findOne({ where: { email } });
     if (userExist) {
       res.status(404).json({ message: "Email already Exists" });
     }
@@ -56,7 +54,7 @@ export const signIn = async (req, res) => {
         sameSite: "None",
       })
       .status(200)
-      .json({ message: "Login successfull"});
+      .json(user);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error Sign In" });
@@ -64,16 +62,16 @@ export const signIn = async (req, res) => {
 };
 
 export const getUser = async (req, res) => {
-  const id = req.params.id;
+  const id = req.user.id;
   try {
     const user = await User.findByPk(id);
     if (user) {
       res.status(200).json(user);
     }
 
-    res.status(404).json({ message: "User Not Found" });
+    return res.status(404).json({ message: "User Not Found" });
   } catch (error) {
-    res.status(400).json({ message: "Error getting a user" });
+    // res.status(400).send("Error getting a user");
   }
 };
 
@@ -89,7 +87,7 @@ export const getUsers = async (req, res) => {
 export const deleteUser = async (req, res) => {
   const { id } = req.params.id;
   try {
-    const user = await User.destroy({where:{id:id}});
+    const user = await User.destroy({ where: { id: id } });
     if (!user) {
       res.status(404).json({ message: "User Not Found" });
     }
@@ -119,21 +117,18 @@ export const updateUser = async (req, res) => {
   }
 };
 
+export const updateStatus = async (req, res) => {
+  const { id, status } = req.body;
 
-export const updateStatus=async(req,res)=>{
-  const{id,status}=req.body
-
-  try{
-    const user=await User.findByPk(id)
-    if(!user){
-      res.status(404).json({message:"User Not Found"})
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: "User Not Found" });
     }
-   user.status=status
-  await user.save()
-res.status(200).json("updated successfully")
-  }
-  catch(error){
+    user.status = status;
+    await user.save();
+    res.status(200).json("updated successfully");
+  } catch (error) {
     res.status(500).json({ message: "Error updating a user status" });
-
   }
-}
+};
