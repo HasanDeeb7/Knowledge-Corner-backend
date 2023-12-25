@@ -1,26 +1,21 @@
 import Book from "../models/bookModel.js";
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 import Author from "../models/authorModel.js";
 import { upload } from "../middleware/multer.js";
 import Category from "../models/categorieModel.js";
 import path from "path";
 import fs from "fs";
 import Library from "../models/libraryModel.js";
+import { Op, where } from "sequelize";
 
 export const getBooksByLimit = async (req, res) => {
   const limit = req.query.limit || 6; // Default to 6 if limit is not provided in the query params
-  const books = await Book.find({}).limit(parseInt(limit));
+  const books = await Book.findAll({});
 
   res.status(200).json(books);
 };
 
 // get all books
-
-export const getBooks = async (req, res) => {
-  const books = await Book.findAll({ include: [Author] });
-
-  res.status(200).json(books);
-};
 
 // get book by autherId
 
@@ -218,3 +213,27 @@ export async function connectBookToLibrary(req, res) {
     console.log(error);
   }
 }
+
+export async function getBooksByLibrary(req, res) {
+  try {
+    const libraryId = req.query.id;
+    const library = await Library.findByPk(libraryId, {
+      include: {
+        model: Book,
+        include: [Author, Library],
+      },
+    });
+    if (library) {
+      res.json(library.Books);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+export const getBooks = async (req, res) => {
+  const books = await Book.findAll({
+    include: [Author, Library],
+  });
+
+  res.status(200).json(books);
+};

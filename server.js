@@ -7,27 +7,27 @@ import cors from "cors";
 import sequelize from "./configs/db.js";
 import userRouter from "./routes/user.js";
 import "./associations.js";
-import libraryRoute from './routes/libraries.js'
+import libraryRoute from "./routes/libraries.js";
 
-import {authenticate} from './middleware/authenticate.js'
+import { authenticate } from "./middleware/authenticate.js";
 import { checkRoles } from "./middleware/checkRoles.js";
+import { withGoogle } from "./controllers/OAuth.js";
+import cookieParser from "cookie-parser";
 // Load environment variables from a .env file
 dotenv.config();
 
 // express app
 const app = express();
-
-// Middleware Configuration
-// Parse JSON in incoming requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// to make the images static
+app.use(cookieParser());
 app.use(express.static("public"));
+
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename);
 // app.use('/static', express.static(path.join(__dirname, 'public')))
 
-// Enable CORS for all routes
+// Enable CORS
 app.use(
   cors({
     origin: ["http://localhost:3000"],
@@ -37,17 +37,21 @@ app.use(
 );
 
 // Request Logging Middleware
-app.use((req, res, next) => {
-  console.log(req.path, req.method);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req.path, req.method);
+//   next();
+// });
 
 // Define routes for books, authors, and categories
-app.use("/api/books",authenticate,bookRoutes);
+app.use("/api/books", bookRoutes);
 app.use("/api/authors", authorRoutes);
 app.use("/api/categories", categorieRoutes);
 app.use("/api/user", userRouter);
-app.use("/api/library",libraryRoute)
+app.use("/api/library", libraryRoute);
+app.post("/api/google-auth", withGoogle);
+app.get("/api/logout", (req, res) => {
+  res.clearCookie("access_token").status(200).send("Successfuly Logged Out!");
+});
 try {
   await sequelize.authenticate();
   console.log("Database Connected");
