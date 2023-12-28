@@ -2,7 +2,9 @@
 import Category from "../models/categorieModel.js";
 // Get a single category
 export const getCategory = async (request, response) => {
-  const { id } = request.params;
+  const id = request.query.id;
+  // console.log(request);
+  console.log(id);
 
   try {
     const category = await Category.findByPk(id);
@@ -30,7 +32,6 @@ export const getCtegories = async (req, res) => {
 
 // Add a category to the database
 export const createCtegory = async (req, res) => {
-  console.log(req.body);
   const { name } = req.body;
 
   // Attempt to create a new category document in the database

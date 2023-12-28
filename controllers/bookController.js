@@ -137,7 +137,7 @@ export const createBook = async (req, res) => {
 export const deleteBook = async (req, res) => {
   // Extract the book's ID from the URL parameters.
   const { id } = req.query;
-
+  console.log(id);
   // Check if the provided ID is a valid MongoDB ObjectId. If not, return a 404 error.
   if (!id) {
     return res.status(400).json({ error: "No Id provided" });
@@ -157,21 +157,21 @@ export const deleteBook = async (req, res) => {
 // update a book
 
 export const updateBook = async (req, res) => {
-  const { id } = req.query;
-  // Validation for he type of the news ID
+  const { id } = req.body;
+
   if (!id) {
     return res.status(404).json({
       error: "No id provided",
     });
   }
 
-  // Fetch the current news post
-  const book = await Book.findByPk(id);
-  if (!book) {
-    return res.status(404).json({ error: "Book not found" });
-  }
   try {
-    // Extract updated data from the request
+    const book = await Book.findByPk(id);
+
+    if (!book) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
     const updatedData = req.body;
 
     const oldImagePath = `public/images/${book.image}`;
@@ -184,18 +184,25 @@ export const updateBook = async (req, res) => {
       fs.unlink(oldImagePath, (err) => {
         if (err) {
           return res.status(500).json({
-            error: `error deleting the old image`,
+            error: `Error deleting the old image`,
           });
         }
       });
     }
 
-    // Update the news post and respond with the updated data
-    book = { ...book, ...updatedData };
+    Object.keys(updatedData).forEach((key) => {
+      if (updatedData[key]) {
+        book.setDataValue(key, updatedData[key]);
+      } else {
+        book.setDataValue(key, book[key]);
+      }
+    });
+
     await book.save();
 
-    return res.json(book);
+    return res.json(req.body);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: `Error, ${error.message}`,
     });
