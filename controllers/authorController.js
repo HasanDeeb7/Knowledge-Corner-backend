@@ -8,42 +8,28 @@ import Author from "../models/authorModel.js";
 //@throws {Error} If there is an error while retrieving authors
 
 export const getAuthors = async (request, response) => {
-
-  try{
-
-    const authors = await Author.findAll({
-      order:[[
-        'createdAt','DESC'
-      ]]
-    });
-  response.status(200).json(authors);
-
+  try {
+    const authors = await Author.findAll({});
+    response.status(200).json(authors);
+  } catch (error) {
+    console.log(error);
+    response.status(500).json({ message: "ERROR FETCHING AUTHORS" });
   }
-  catch(error){
-response.status(500).json({message:"ERROR FETCHING AUTHORS"})
-  }
-  
 };
-
 
 //get an author
 //@returns {Object} The author object with the specified ID
 export const getAuthor = async (request, response) => {
   const { id } = request.params;
 
-  try{
-const author=await Author.findByPk(id)
-if(author){
-return  response.status(200).json(author);
-
-}
-return response.status(404).json({ error: "no such author" });
-
-
-  }
-  catch(error){
-    response.status(500).json({message:"ERROR FETCHING AUTHOR"})
-
+  try {
+    const author = await Author.findByPk(id);
+    if (author) {
+      return response.status(200).json(author);
+    }
+    return response.status(404).json({ error: "no such author" });
+  } catch (error) {
+    response.status(500).json({ message: "ERROR FETCHING AUTHOR" });
   }
 };
 //create author
@@ -89,7 +75,7 @@ export const createAuthor = async (request, response) => {
       filename: "default-image.png",
     };
   }
- 
+
   const image = request.file.filename;
   try {
     const author = await Author.create({
@@ -104,8 +90,8 @@ export const createAuthor = async (request, response) => {
       rating,
       image,
     });
-   
-   return response.status(200).json(author);
+
+    return response.status(200).json(author);
   } catch (error) {
     response.status(400).json({ error: error.message });
     const path = `public/images/${request.file.filename}`;
@@ -117,49 +103,43 @@ export const createAuthor = async (request, response) => {
   }
 };
 
-
-
 //delete author
 //@returns {Object} The deleted author object.
 export const deleteAuthor = async (request, response) => {
   const { id } = request.params;
-try{
-  const author = await Author.findByPk(id);
-  if(!author){
-    return response.status(404).json({ error: "no such authorr" });
-
+  try {
+    const author = await Author.findByPk(id);
+    if (!author) {
+      return response.status(404).json({ error: "no such authorr" });
+    }
+    await author.destroy();
+    response.status(200).json("Author deleted successfully");
+  } catch (error) {
+    response.status(500).json({ message: err.message });
   }
-await author.destroy()
-  response.status(200).json('Author deleted successfully');
-}
-catch(error){
-response.status(500).json({message:err.message})}
- 
 };
-
-
 
 // update author
 //@returns {Object} The updated author object
 export const updateAuthor = async (request, response) => {
   const { id } = request.params;
   const updatedData = request.body;
-  try{
+  try {
     const authorValid = await Author.findByPk(id);
-    if(!authorValid){
-      if(request.file){
+    if (!authorValid) {
+      if (request.file) {
         fs.unlinkSync(request.file.filename);
-
       }
-        return response.status(404).json({ error: "no such author" });
-      
+      return response.status(404).json({ error: "no such author" });
     }
 
-    const oldImagePath = authorValid.image?`public/images/${authorValid.image}`:null;
+    const oldImagePath = authorValid.image
+      ? `public/images/${authorValid.image}`
+      : null;
 
     if (request.file && request.file.filename !== "default-image.png") {
       updatedData.image = request.file.filename;
-  
+
       fs.unlink(oldImagePath, (err) => {
         if (err) {
           return response.status(500).json({
@@ -169,18 +149,12 @@ export const updateAuthor = async (request, response) => {
       });
     }
 
-    const updatedAuthor = await Author.update(
-
-      updatedData,
-      { where: { id: id } } 
-    );
+    const updatedAuthor = await Author.update(updatedData, {
+      where: { id: id },
+    });
     return response.status(200).json(updatedAuthor);
-   
+  } catch (error) {
+    console.log(error);
+    response.status(500).json({ message: error.message });
   }
-
-  
-  catch(error){
-    console.log(error)
-    response.status(500).json({message:error.message})}
- 
 };

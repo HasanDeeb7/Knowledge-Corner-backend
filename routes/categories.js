@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/", getCtegories);
 
 // GET a single book
-router.get("/:id", getCategory);
+router.get("/one", getCategory);
 
 // // POST a new catrgory
 router.post("/", createCtegory);
