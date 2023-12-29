@@ -25,7 +25,7 @@ export const getLibraries = async (req, res) => {
     });
     res.status(200).json(libraries);
   } catch (error) {
-    response.status(500).json({ message: "ERROR FETCHING LIBRAIRIES" });
+    res.status(500).json({ message: "ERROR FETCHING LIBRAIRIES" });
   }
 };
 
