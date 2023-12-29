@@ -7,6 +7,7 @@ import path from "path";
 import fs from "fs";
 import Library from "../models/libraryModel.js";
 import { Op, where } from "sequelize";
+import slugify from "slugify";
 
 export const getBooksByLimit = async (req, res) => {
   const limit = req.query.limit || 6; // Default to 6 if limit is not provided in the query params
@@ -103,6 +104,10 @@ export const createBook = async (req, res) => {
     const category = categoryName
       ? await Category.findOne({ where: { Name: categoryName } })
       : "Other";
+      const publicationYear = new Date(publicationDate).getFullYear();
+
+      const slug=slugify(`${title} ${author.firstName} ${publicationYear}`,{lower:true})
+
     // Create a new book in the database with the provided details, including the image path.
     const book = await Book.create({
       title,
@@ -115,6 +120,7 @@ export const createBook = async (req, res) => {
       rating,
       authorName: author ? `${author.firstName} ${author.lastName}` : "Unknown",
       categoryName: categoryName,
+      slug:slug
     });
     if (author) {
       book.setAuthor(author);
@@ -166,7 +172,7 @@ export const updateBook = async (req, res) => {
   }
 
   // Fetch the current news post
-  const book = await Book.findByPk(id);
+  let book = await Book.findByPk(id);
   if (!book) {
     return res.status(404).json({ error: "Book not found" });
   }
@@ -191,7 +197,12 @@ export const updateBook = async (req, res) => {
     }
 
     // Update the news post and respond with the updated data
-    book = { ...book, ...updatedData };
+    // book = { ...book, ...updatedData };
+    const author = req.body.authorId ? await Author.findByPk(req.body.authorId) : null;
+    const publicationYear =req.body.publicationDate? new Date(req.body.publicationDate).getFullYear():null;
+    const slug = slugify(`${req.body.title} ${author.firstName} ${publicationYear}`, { lower: true });
+
+    await book.update({...book,...updatedData,slug})
     await book.save();
 
     return res.json(book);

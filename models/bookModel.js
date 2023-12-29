@@ -76,6 +76,10 @@ const Book = sequelize.define(
       allowNull: false,
       defaultValue: "Other",
     },
+    slug:{
+      type:DataTypes.STRING,
+      unique:true
+    }
   },
   { timestamps: true }
 ); // Automatically manage "createdAt" and "updatedAt" timestamps

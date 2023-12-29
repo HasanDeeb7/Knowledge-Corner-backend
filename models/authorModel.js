@@ -1,4 +1,4 @@
-import Sequelize from "sequelize";
+import Sequelize, { DataTypes } from "sequelize";
 import sequelize from "../configs/db.js";
 
 const Author = sequelize.define("Author", {
@@ -45,6 +45,10 @@ const Author = sequelize.define("Author", {
     allowNull: true,
     defaultValue: "default-image.png",
   },
+  slug:{
+    type:DataTypes.STRING,
+    unique:true
+  }
 });
 
 export default Author;

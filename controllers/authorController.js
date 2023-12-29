@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import fs from "fs";
 import Author from "../models/authorModel.js";
+import slugify from "slugify";
 
 //get all authors
 //@param {Object} request  -  @param {Object} response
@@ -91,6 +92,8 @@ export const createAuthor = async (request, response) => {
   }
  
   const image = request.file.filename;
+  const slug=slugify(`${firstName} ${lastName}`,{lower:true})
+
   try {
     const author = await Author.create({
       firstName,
@@ -103,6 +106,7 @@ export const createAuthor = async (request, response) => {
       blogLink,
       rating,
       image,
+      slug
     });
    
    return response.status(200).json(author);
@@ -168,7 +172,10 @@ export const updateAuthor = async (request, response) => {
         }
       });
     }
-
+if(request.body.firstName && request.body.lastName)
+{ const slug=slugify(`${request.body.firstName} ${request.body.lastName}`,{lower:true})
+updatedData.slug=slug
+  }
     const updatedAuthor = await Author.update(
 
       updatedData,
