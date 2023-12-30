@@ -37,9 +37,8 @@ const Book = sequelize.define(
 
     // Description of the book (DataTypes.STRING)
     description: {
-      type: DataTypes.STRING, // Field type
+      type: DataTypes.TEXT, // Field type
       allowNull: false, // Must be provided
-      validate: { len: [10, Infinity] }, // Minimum length of 10 characters
     },
 
     // Number of pages in the book (Number)
