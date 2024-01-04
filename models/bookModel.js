@@ -55,7 +55,7 @@ const Book = sequelize.define(
       type: DataTypes.STRING, // Field type
       allowNull: false, // Must be provided
       // match: /\.(jpg|jpeg|png)$/ // Should match a valid image file extension
-    },
+    },  
 
     // Language of the book (DataTypes.STRING)
     language: {

@@ -16,4 +16,4 @@ Author.hasMany(Book);
 Book.belongsTo(Category);
 Category.hasMany(Book);
 
-// await sequelize.sync({ alter: true });
+// await sequelize.sync({ alter: true x});

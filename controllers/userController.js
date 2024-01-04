@@ -132,3 +132,17 @@ export const updateStatus = async (req, res) => {
     res.status(500).json({ message: "Error updating a user status" });
   }
 };
+
+export const getUserById = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findByPk(id);
+    if (user) {
+      res.status(200).json(user);
+    }
+
+    return res.status(404).json({ message: "User Not Found" });
+  } catch (error) {
+    // res.status(400).send("Error getting a user");
+  }
+};

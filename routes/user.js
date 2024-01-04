@@ -1,5 +1,5 @@
 import express from 'express'
-import {signUp,signIn,getUser,getUsers,deleteUser,updateUser,updateStatus} from '../controllers/userController.js'
+import {signUp,signIn,getUser,getUsers,deleteUser,updateUser,updateStatus,getUserById} from '../controllers/userController.js'
 import { authenticate } from '../middleware/authenticate.js'
 
  const userRouter=express.Router()
@@ -12,4 +12,6 @@ userRouter.get('/getAll',getUsers)
 userRouter.delete('/delete/:id',deleteUser)
 userRouter.put('/update',updateUser)
 userRouter.patch('/status',updateStatus)
+userRouter.get('/getUser/:id',getUserById)
+
 export default userRouter

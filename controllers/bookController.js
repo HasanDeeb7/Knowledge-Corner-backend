@@ -8,6 +8,8 @@ import fs from "fs";
 import Library from "../models/libraryModel.js";
 import { Op, where } from "sequelize";
 import slugify from "slugify";
+import sequelize from "../configs/db.js";
+import { DataTypes, fn, col, literal } from 'sequelize';
 
 export const getBooksByLimit = async (req, res) => {
   const limit = req.query.limit || 6; // Default to 6 if limit is not provided in the query params
@@ -262,3 +264,69 @@ export const getBooks = async (req, res) => {
 
   res.status(200).json(books);
 };
+
+
+export const getBooksByCategory=async(req,res)=>{
+  try{
+
+    const books=await Book.findAll({
+      attributes:['categoryName'
+    ,
+        [literal('COUNT(id)'), 'bookCount']],
+  group:['categoryName']
+    })
+
+    res.status(200).json(books)
+  }
+  catch(err){
+    res.status(400).json('Catching an Error'+err)
+  }
+}
+
+export const getBookAddedMonth=async(req,res)=>{
+  try{
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const books=await Book.findAll(
+      {
+        attributes: [
+          [fn('MONTH', col('createdAt')), 'month'],
+          [fn('COUNT', col('id')), 'bookCount']
+        ],
+        group: [fn('MONTH', col('createdAt'))],
+        where:{
+          createdAt:{
+            [Op.gte]:sixMonthsAgo
+          }
+        },
+        order: [
+          [fn('YEAR', col('createdAt')), 'ASC'], // Order by year in ascending order
+          [fn('MONTH', col('createdAt')), 'ASC'] // Then order by month in ascending order
+        ]
+      }
+    )
+
+    res.status(200).json(books)
+  }
+  catch(err){
+    res.status(400).json('Catching an Error'+err)
+  }
+}
+
+export const getRecents=async(req,res)=>{
+try{
+  const books=await Book.findAll(
+    {
+      order: [['createdAt','DESC']
+      ],
+      limit:5
+    }
+  )
+
+  res.status(200).json(books)
+}
+catch(err){
+  res.status(400).json('Catching an Error'+err)
+}
+}

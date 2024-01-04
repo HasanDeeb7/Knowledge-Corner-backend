@@ -13,6 +13,9 @@ import {
   getBooksByLimit,
   connectBookToLibrary,
   getBooksByLibrary,
+  getBooksByCategory,
+  getBookAddedMonth,
+  getRecents,
 } from "../controllers/bookController.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { checkRoles } from "../middleware/checkRoles.js";
@@ -49,4 +52,8 @@ router.patch("/update", upload.single("image"), updateBook);
 router.post("/addtolibrary", connectBookToLibrary);
 router.get("/libraryBooks", getBooksByLibrary);
 
+
+router.get('/getNbByCategory',getBooksByCategory)
+router.get('/byMonth',getBookAddedMonth)
+router.get('/recents',getRecents)
 export default router;
