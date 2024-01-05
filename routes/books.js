@@ -16,6 +16,7 @@ import {
   getBooksByCategory,
   getBookAddedMonth,
   getRecents,
+  getTopAuthors
 } from "../controllers/bookController.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { checkRoles } from "../middleware/checkRoles.js";
@@ -56,4 +57,7 @@ router.get("/libraryBooks", getBooksByLibrary);
 router.get('/getNbByCategory',getBooksByCategory)
 router.get('/byMonth',getBookAddedMonth)
 router.get('/recents',getRecents)
+
+router.get('/top',getTopAuthors)
+
 export default router;

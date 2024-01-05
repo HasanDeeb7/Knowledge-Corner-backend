@@ -108,7 +108,16 @@ export const updateUser = async (req, res) => {
 
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
-    if (email) user.email = email;
+    if (email) {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser && existingUser.id !== id) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+      else{
+        user.email = email;
+      }
+    }
+    // if (email) user.email = email;
     if (password) user.password = bcryptjs.hashSync(password, 10);
     await user.save();
     res.status(200).json(user);

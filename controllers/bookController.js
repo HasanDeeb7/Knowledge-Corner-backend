@@ -330,3 +330,25 @@ catch(err){
   res.status(400).json('Catching an Error'+err)
 }
 }
+
+export const getTopAuthors=async(req,res)=>{
+  try{
+    const books=await Book.findAll(
+      {
+        attributes: [
+          'authorName',
+          [sequelize.fn('COUNT', sequelize.col('AuthorId')), 'bookCount'],
+        ],
+        group: ['authorName'],
+        order: [[sequelize.literal('bookCount'), 'DESC']],
+        limit: 5,
+
+      }
+    )
+  
+    res.status(200).json(books)
+  }
+  catch(err){
+    res.status(400).json('Catching an Error'+err.message)
+  }
+}
