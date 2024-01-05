@@ -14,6 +14,6 @@ libraryRoute.get("/", getLibraries);
 libraryRoute.post("/create", createLibrary);
 libraryRoute.get("/:id", getLibrary);
 libraryRoute.put("/update", updateLibrary);
-libraryRoute.delete("/:id", deleteLibrary);
+libraryRoute.delete("/delete", deleteLibrary);
 libraryRoute.patch("/status", updateLibraryStatus);
 export default libraryRoute;

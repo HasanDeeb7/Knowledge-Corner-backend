@@ -2,14 +2,16 @@ import Book from "../models/bookModel.js";
 import Library from "../models/libraryModel.js";
 
 export const createLibrary = async (req, res) => {
-  const { name } = req.query;
+  const { name } = req.body;
 
   try {
     const library = await Library.create({
       name,
       status: "active",
     });
-    if (!library) return res.status(500).json("error creating library");
+    if (!library) {
+      return res.status(500).json("error creating library");
+    }
 
     res.status(200).json(library);
   } catch (error) {
@@ -44,17 +46,15 @@ export const getLibrary = async (req, res) => {
 };
 
 export const updateLibrary = async (req, res) => {
-  const { id, name, status } = req.body;
+  const { id, name } = req.body;
 
   try {
     const library = await Library.findOne({ where: { id: id } });
-
     if (!library) {
       res.status(404).json({ error: "Library Not Found!" });
     }
     const updated = await library.update(
-      { name: name, status: status },
-      { new: true }
+      { name: name },
     );
     res.status(200).json(library);
   } catch (error) {
@@ -63,9 +63,9 @@ export const updateLibrary = async (req, res) => {
 };
 
 export const deleteLibrary = async (req, res) => {
-  const id = req.params;
+  const { id } = req.query;
   try {
-    const library = await Library.findOne({ id: id });
+    const library = await Library.findByPk(id);
     if (!library) {
       res.status(404).json("Library Not Found");
     }
