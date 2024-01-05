@@ -16,13 +16,15 @@ import {
   getBooksByCategory,
   getBookAddedMonth,
   getRecents,
-  getTopAuthors
+  getTopAuthors,
+  removeFromLibrary,
 } from "../controllers/bookController.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { checkRoles } from "../middleware/checkRoles.js";
+import { paginate } from "../middleware/pagination.js";
 const router = express.Router();
 
-router.get("/limitedBooks", getBooksByLimit);
+router.get("/limitedBooks", paginate, getBooksByLimit);
 
 // GET all books
 router.get("/", getBooks);
@@ -51,6 +53,7 @@ router.delete(
 router.patch("/update", upload.single("image"), updateBook);
 
 router.post("/addtolibrary", connectBookToLibrary);
+router.patch("/removefromlibrary", removeFromLibrary)
 router.get("/libraryBooks", getBooksByLibrary);
 
 

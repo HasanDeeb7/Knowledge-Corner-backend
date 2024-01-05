@@ -75,3 +75,19 @@ export const deleteLibrary = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+export const updateLibraryStatus = async (req, res) => {
+  const { id, status } = req.body;
+
+  try {
+    const library = await Library.findByPk(id);
+    if (!library) {
+      res.status(404).json({ message: "Library Not Found" });
+    }
+    library.status = status;
+    await library.save();
+    res.status(200).json("updated successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error updating a Library status" });
+  }
+};
