@@ -44,8 +44,8 @@ router.post("/add", upload.single("image"), createBook);
 // // DELETE a new book
 router.delete(
   "/delete",
-  authenticate,
-  checkRoles(["admin", "superAdmin"]),
+  // authenticate,
+  // checkRoles(["admin", "superAdmin"]),
   deleteBook
 );
 

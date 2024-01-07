@@ -80,12 +80,13 @@ export const getUsers = async (req, res) => {
     const users = await User.findAll();
     res.status(200).json(users);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: "Error fetching users" });
   }
 };
 
 export const deleteUser = async (req, res) => {
-  const { id } = req.params.id;
+  const { id } = req.query;
   try {
     const user = await User.destroy({ where: { id: id } });
     if (!user) {
@@ -97,34 +98,35 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-export const updateUser = async (req, res) => {
-  const { id, firstName, lastName, email, password } = req.body;
+  export const updateUser = async (req, res) => {
+    const { id, firstName, lastName, email, password ,role} = req.body;
 
-  try {
-    const user = await User.findByPk(id);
-    if (!user) {
-      res.status(404).json({ message: "User Not Found" });
-    }
+    try {
+      const user = await User.findByPk(id);
+      if (!user) {
+        res.status(404).json({ message: "User Not Found" });
+      }
 
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (email) {
-      const existingUser = await User.findOne({ where: { email } });
-      if (existingUser && existingUser.id !== id) {
-        return res.status(400).json({ message: "Email already exists" });
+      if (firstName) user.firstName = firstName;
+      if (lastName) user.lastName = lastName;
+      if(role) user.role=role
+      if (email) {
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser && existingUser.id !== id) {
+          return res.status(400).json({ message: "Email already exists" });
+        }
+        else{
+          user.email = email;
+        }
       }
-      else{
-        user.email = email;
-      }
+      // if (email) user.email = email;
+      if (password) user.password = bcryptjs.hashSync(password, 10);
+      await user.save();
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating a user" });
     }
-    // if (email) user.email = email;
-    if (password) user.password = bcryptjs.hashSync(password, 10);
-    await user.save();
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating a user" });
-  }
-};
+  };
 
 export const updateStatus = async (req, res) => {
   const { id, status } = req.body;

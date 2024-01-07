@@ -4,8 +4,7 @@ import Category from "../models/categorieModel.js";
 export const getCategory = async (request, response) => {
   const id = request.query.id;
   // console.log(request);
-  console.log(id);
-
+  // console.log(id);
   try {
     const category = await Category.findByPk(id);
     if (category) {
@@ -37,7 +36,7 @@ export const createCtegory = async (req, res) => {
   // Attempt to create a new category document in the database
   const existingCat = await Category.findOne({ where: { Name: name } });
   if (existingCat) {
-    return res.error(400).json({ error: "Category already exists" });
+    return res.status(400).json({ error: "Category already exists" });
   }
   try {
     const category = await Category.create({
@@ -69,19 +68,26 @@ export const deleteCtegory = async (req, response) => {
 export const updateCtegory = async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
-  const category = await Category.findByPk(id);
-  if (!category) {
-    return response.status(404).json("Category Not found");
+  try{
+    const category = await Category.findByPk(id);
+    if (!category) {
+      return response.status(404).json("Category Not found");
+    }
+    // Find and update a category by its ID with the data from the request body
+    const updCat = await Category.update(
+      { Name: name },
+      { where: { id: category.id } ,returning:true}
+    );
+  
+    if (!updCat) {
+      return res.status(404).json({ error: "No such a category" });
+    }
+  
+    res.status(200).json(updCat);
   }
-  // Find and update a category by its ID with the data from the request body
-  const updCat = await Category.update(
-    { Name: name },
-    { where: { id: category.id } }
-  );
+  catch(err){
+    response.status(500).json({ message: err.message });
 
-  if (!updCat) {
-    return res.status(404).json({ error: "No such a category" });
   }
-
-  res.status(200).json(updCat);
+  
 };

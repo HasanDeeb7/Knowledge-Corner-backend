@@ -18,7 +18,7 @@ router.get("/one", getCategory);
 // // POST a new catrgory
 router.post("/", createCtegory);
 
-// DELETE a category
+// DELETE a category  
 router.delete("/:id", deleteCtegory);
 
 // // // UPDATE a category

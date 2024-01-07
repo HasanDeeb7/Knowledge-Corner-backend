@@ -221,8 +221,9 @@ export const updateBook = async (req, res) => {
     const publicationYear = req.body.publicationDate
       ? new Date(req.body.publicationDate).getFullYear()
       : null;
+
     const slug = slugify(
-      `${req.body.title} ${author.firstName} ${publicationYear}`,
+      `${req.body.title} ${author?.firstName} ${publicationYear}`,
       { lower: true }
     );
 
