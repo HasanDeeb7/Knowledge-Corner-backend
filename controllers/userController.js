@@ -3,7 +3,7 @@ import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 
 export const signUp = async (req, res) => {
-  const { firstName, lastName, email, password, role } = req.body;
+  const { firstName, lastName, email, password } = req.body;
   const hashedPass = bcryptjs.hashSync(password, 10);
 
   try {
@@ -16,7 +16,7 @@ export const signUp = async (req, res) => {
       lastName,
       email,
       password: hashedPass,
-      role,
+      role:"user",
     });
     res.status(200).json(user);
   } catch (error) {
